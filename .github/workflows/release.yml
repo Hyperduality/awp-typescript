@@ -1,0 +1,49 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: the tag names the package version
+        run: test "v$(node -p "require('./package.json').version")" = "${GITHUB_REF_NAME}"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm pack --dry-run
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write  # npm trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - name: publish, unless this version is already on npm
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if npm view "@hyperduality/awp@${version}" version >/dev/null 2>&1; then
+            echo "@hyperduality/awp@${version} is already published"
+            exit 0
+          fi
+          pre="${version#*-}"
+          if [ "$pre" = "$version" ]; then tag=latest; else tag="${pre%%.*}"; fi
+          npm publish --tag "$tag"

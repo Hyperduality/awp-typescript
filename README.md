@@ -30,7 +30,16 @@ the canonical JSON Schemas alone — no code or documentation of other AWP imple
 Not implemented: stream bindings other than `inline` and `ws`, the approver role, `session.transfer`,
 multi-bind sessions, and the `awp.bearer.<token>` subprotocol fallback (Node can set headers).
 
-## Install, build, test
+## Install
+
+```bash
+npm install @hyperduality/awp@alpha
+```
+
+The package ships the SDK, the `awp-demo` agent, and the vendored schemas it validates against. Alpha
+releases are published under the `alpha` dist-tag; each names the draft revision it targets.
+
+## Build and test
 
 ```bash
 npm install
@@ -46,7 +55,9 @@ npm run sync-schemas   # re-vendor from ../agent-world-protocol at tag spec-v0.1
 `schemas/` holds the canonical schemas (`schemas/v0.1`), the frame test vectors
 (`schemas/test-vectors/frames.json`), and the lifecycle table (`schemas/action-lifecycle.json`,
 converted from `spec/action-lifecycle.yaml`), all read from one git ref of the specification repository.
-CI (`.github/workflows/ci.yml`) runs the typecheck and tests on Node 20, 22 and 24, and the schema check.
+CI (`.github/workflows/ci.yml`) runs the typecheck and tests on Node 20, 22 and 24, the schema check, and
+awp-conformance against `awp-demo` in both time models. Pushing a `v*` tag publishes that version to npm
+(`.github/workflows/release.yml`).
 
 ## Using the SDK
 
