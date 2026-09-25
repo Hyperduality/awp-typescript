@@ -1,0 +1,4 @@
+{
+  "proprio": { "p_m": [0, 0, 0.4], "v_mps": [0, 0, 0] },
+  "arm_state": { "phase": "idle", "target_m": null, "action_id": null }
+}

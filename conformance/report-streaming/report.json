@@ -1,0 +1,1498 @@
+{
+  "suite": {
+    "name": "awp-conformance",
+    "version": "0.1.0a3"
+  },
+  "specification": "0.1-draft.9",
+  "target": "node dist/demo.js --url {url} --token {token}",
+  "side": "agent",
+  "generated": "2026-09-25T19:35:57Z",
+  "claim": {
+    "status": "conformant",
+    "wording": "Core Agent (streaming): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a3)",
+    "classes": [
+      "Core Agent"
+    ],
+    "modes": [
+      "streaming"
+    ],
+    "failed": [],
+    "untested": [],
+    "manual_evidence_required": [
+      "AWP-DAT-008",
+      "AWP-VER-009"
+    ],
+    "counts": {
+      "manual": 2,
+      "n/a": 187,
+      "pass": 45,
+      "untestable": 3
+    }
+  },
+  "requirements": [
+    {
+      "id": "AWP-ACT-001",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-ACT-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ACT-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ACT-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ACT-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ACT-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ACT-007",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "26 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-ACT-008",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ACT-009",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ACT-010",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-AGM-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AGM-002",
+      "level": "SHOULD",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AGT-001",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "182 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-AGT-002",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/invalid-manifest"
+    },
+    {
+      "id": "AWP-AGT-003",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "54 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-AGT-004",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-AGT-005",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-AGT-006",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "16 check(s): streaming/baseline, streaming/frame-gaps, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world"
+    },
+    {
+      "id": "AWP-AGT-007",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/reconnect"
+    },
+    {
+      "id": "AWP-AGT-008",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "26 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-AGT-009",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-APR-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-APR-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-APR-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-APR-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-APR-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-APR-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-APR-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AUD-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AUD-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AUD-003",
+      "level": "SHOULD",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AUD-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AUD-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AUD-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AUD-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AV-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-AV-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CLK-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-CLK-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-CLK-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-CLK-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-CLK-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-CLK-006",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "91 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CLK-007",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "15 check(s): streaming/baseline, streaming/frame-gaps, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world"
+    },
+    {
+      "id": "AWP-CLK-008",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "27 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CLK-009",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "26 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CMD-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CMD-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CMD-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CMD-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CMD-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CMD-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CMD-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CMD-008",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CNF-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CNF-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CNF-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CNF-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CNF-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CNF-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-CTL-001",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "192 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CTL-002",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "10 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CTL-003",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-CTL-004",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "91 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CTL-005",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/reconnect"
+    },
+    {
+      "id": "AWP-CTL-006",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "192 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CTL-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-CTL-008",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/reconnect"
+    },
+    {
+      "id": "AWP-CTL-009",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "194 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-CTL-010",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-DAT-001",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/frame-gaps"
+    },
+    {
+      "id": "AWP-DAT-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-DAT-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-DAT-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-DAT-005",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-DAT-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-DAT-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-DAT-008",
+      "level": "MUST",
+      "outcome": "manual",
+      "detail": "manual: run the implementation's decoder over schemas/test-vectors/frames.json and attach the result"
+    },
+    {
+      "id": "AWP-DAT-009",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/frame-gaps"
+    },
+    {
+      "id": "AWP-DAT-010",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/malformed-frame"
+    },
+    {
+      "id": "AWP-EMB-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-EMB-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-EMB-003",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-EMB-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-EMB-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ENV-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ENV-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ENV-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ENV-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ENV-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ERR-001",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "4 check(s): streaming/refused-submission"
+    },
+    {
+      "id": "AWP-EVT-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-EVT-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-EVT-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GUI-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GUI-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GUI-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GUI-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GUI-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-003",
+      "level": "SHOULD",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-008",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-LIF-009",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-LIF-010",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MA-001",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MA-002",
+      "level": "SHOULD",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MA-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MA-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MA-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MAN-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MAN-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MAN-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MAN-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MAN-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MAN-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MAN-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MOD-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-MOD-002",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-MOD-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-NEG-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-NEG-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-NEG-003",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-NEG-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-OBS-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-OBS-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-OBS-003",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-OBS-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-OBS-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-OBS-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-OBS-007",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-PRE-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRE-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRE-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRE-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRE-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRE-006",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRE-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRM-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRM-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRM-003",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRM-004",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRM-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-PRM-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-REP-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-REP-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-REP-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ROB-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ROB-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ROB-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ROB-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ROB-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ROB-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-ROB-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-001",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "16 check(s): streaming/baseline, streaming/frame-gaps, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world"
+    },
+    {
+      "id": "AWP-SAF-002",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/silent-world"
+    },
+    {
+      "id": "AWP-SAF-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-005",
+      "level": "SHOULD",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-SAF-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-008",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-009",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-010",
+      "level": "SHOULD",
+      "outcome": "pass",
+      "detail": "26 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-SAF-011",
+      "level": "SHOULD",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-SAF-012",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SAF-013",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SCN-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SCN-002",
+      "level": "SHOULD",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SCN-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SEC-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SEC-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SEC-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SEC-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SEC-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "loopback endpoint"
+    },
+    {
+      "id": "AWP-SEC-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-008",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "2 check(s): streaming/restarted-world"
+    },
+    {
+      "id": "AWP-SES-009",
+      "level": "MAY",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-010",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-011",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-SES-012",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "2 check(s): streaming/baseline, streaming/frame-gaps"
+    },
+    {
+      "id": "AWP-SIM-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "applies to lockstep only; tested streaming"
+    },
+    {
+      "id": "AWP-TIM-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-008",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-009",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-010",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-011",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-012",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TIM-013",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TRN-001",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "14 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-TRN-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-004",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-TRN-005",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-006",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-008",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-009",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TRN-010",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-011",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-TRN-012",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "stream endpoints offered: no"
+    },
+    {
+      "id": "AWP-TRN-013",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "stream endpoints offered: no"
+    },
+    {
+      "id": "AWP-TSK-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TSK-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TSK-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TSK-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-TSK-005",
+      "level": "SHOULD",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-UNI-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-UNI-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-UNI-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-UNI-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-VER-001",
+      "level": "MUST",
+      "outcome": "untestable",
+      "detail": "untestable: process or deployment policy"
+    },
+    {
+      "id": "AWP-VER-002",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "14 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-VER-003",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "1 check(s): streaming/baseline"
+    },
+    {
+      "id": "AWP-VER-004",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "167 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-VER-005",
+      "level": "MUST",
+      "outcome": "untestable",
+      "detail": "untestable: process or deployment policy"
+    },
+    {
+      "id": "AWP-VER-006",
+      "level": "MUST",
+      "outcome": "untestable",
+      "detail": "untestable: process or deployment policy"
+    },
+    {
+      "id": "AWP-VER-007",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "no agent-side obligation on the inline binding without command channels"
+    },
+    {
+      "id": "AWP-VER-008",
+      "level": "MUST",
+      "outcome": "pass",
+      "detail": "14 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+    },
+    {
+      "id": "AWP-VER-009",
+      "level": "MUST",
+      "outcome": "manual",
+      "detail": "manual: the implementation's documentation and the conformance report name the draft revision"
+    }
+  ],
+  "episodes": [
+    {
+      "episode": "streaming/baseline",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/frame-gaps",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/reconnect",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/restarted-world",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/integer-range",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/malformed-frame",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/invalid-manifest",
+      "outcome": "ended without closing"
+    },
+    {
+      "episode": "streaming/no-action-grants",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/refused-submission",
+      "outcome": "closed its session"
+    },
+    {
+      "episode": "streaming/silent-world",
+      "outcome": "ended without closing"
+    }
+  ]
+}

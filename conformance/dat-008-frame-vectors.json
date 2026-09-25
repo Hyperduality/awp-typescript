@@ -1,0 +1,140 @@
+{
+  "requirement": "AWP-DAT-008",
+  "implementation": "@hyperduality/awp (TypeScript)",
+  "spec_revision": "0.1-draft.9",
+  "vectors_file": "schemas/test-vectors/frames.json (vendored from 8b17a6c, commit 8b17a6cef15d294dee579270e8bd56e556ce252e)",
+  "passed": 20,
+  "failed": 0,
+  "results": [
+    {
+      "name": "minimal",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "keyframe_tick",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "tick_and_ts_sim",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "negative_ts_sim",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "streaming_ts_send",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "unknown_extension",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "zero_payload",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "reserved_bits_set",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "resync_keyframe",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "max_seq_safe",
+      "outcome": "pass",
+      "mismatches": [],
+      "round_trip": true
+    },
+    {
+      "name": "ext_len_exceeds_frame",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: ext_len 32 exceeds the frame"
+    },
+    {
+      "name": "wrong_registered_len",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: registered extension 0x1 has len 4, expected 8"
+    },
+    {
+      "name": "wrong_registered_len_ts_send",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: registered extension 0x3 has len 4, expected 8"
+    },
+    {
+      "name": "duplicate_type",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: duplicate extension type 0x1"
+    },
+    {
+      "name": "payload_len_mismatch",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: payload_len 4 does not match the 2 bytes after the header"
+    },
+    {
+      "name": "bad_magic",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: bad magic (expected AWPF)"
+    },
+    {
+      "name": "unknown_version",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: unsupported frame version 2"
+    },
+    {
+      "name": "trailing_bytes",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: payload_len 16 does not match the 17 bytes after the header"
+    },
+    {
+      "name": "resync_without_keyframe",
+      "expect_error": "AWP_MALFORMED",
+      "got_error": "AWP_MALFORMED",
+      "outcome": "pass",
+      "detail": "AWP_MALFORMED: resync without keyframe (AWP-DAT-010)"
+    },
+    {
+      "name": "seq_over_2p53",
+      "expect_error": "AWP_INTEGER_RANGE",
+      "got_error": "AWP_INTEGER_RANGE",
+      "outcome": "pass",
+      "detail": "AWP_INTEGER_RANGE: seq = 9007199254740992 exceeds 2^53 − 1"
+    }
+  ]
+}
