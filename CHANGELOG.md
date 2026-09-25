@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-alpha.2
+
+Targets specification revision `0.1-draft.9`.
+
+- The conformance reports come from awp-conformance 0.1.0a4. The API is unchanged.
+
 ## 0.1.0-alpha.1
 
 First release on npm, targeting specification revision `0.1-draft.9`.

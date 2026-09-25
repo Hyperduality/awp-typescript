@@ -45,7 +45,7 @@ releases are published under the `alpha` dist-tag; each names the draft revision
 npm install
 npm run build          # tsc → dist/
 npm run typecheck      # tsc --noEmit over src and test
-npm test               # node:test on the compiled tests, 110 tests (unit + an in-process scripted world)
+npm test               # node:test on the compiled tests: unit tests and an in-process scripted world
 npm run test:ts        # the same tests from source (Node ≥ 22.6, type stripping)
 npm run check-schemas  # vendored files == spec repo at the ref recorded in schemas/source.json
 npm run sync-schemas   # re-vendor from ../agent-world-protocol at tag spec-v0.1-draft.9
