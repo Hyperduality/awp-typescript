@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/session-transfer.schema.json",
+  "title": "session.transfer params (AWP-EMB-003)",
+  "type": "object",
+  "properties": {
+    "expires_in_ms": {"type": "integer", "minimum": 1000, "default": 30000}
+  },
+  "required": [],
+  "x-awp-closed": true
+}

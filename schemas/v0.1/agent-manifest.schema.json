@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/agent-manifest.schema.json",
+  "title": "Agent manifest (initialize params)",
+  "description": "What the agent declares in initialize (spec/session/agent-manifest).",
+  "type": "object",
+  "properties": {
+    "protocol_versions": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/protocol_version" }, "minItems": 1, "uniqueItems": true },
+    "agent": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "vendor": { "type": "string", "minLength": 1 }
+      },
+      "required": ["name", "version", "vendor"],
+      "additionalProperties": true
+    },
+    "consumes_modalities": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true },
+    "time_models": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/time_model" }, "minItems": 1, "uniqueItems": true, "default": ["lockstep", "streaming"] },
+    "max_obs_rate_hz": { "type": "number", "exclusiveMinimum": 0 },
+    "extensions": { "$ref": "common.schema.json#/$defs/extensions" }
+  },
+  "required": ["protocol_versions", "agent", "consumes_modalities"],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

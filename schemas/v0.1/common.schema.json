@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/common.schema.json",
+  "title": "AWP common definitions",
+  "description": "Shared primitives referenced by every other AWP schema. Apache-2.0.",
+  "$defs": {
+    "u53": {
+      "description": "Unsigned 64-bit value carried as a JSON integer; bounded by 2^53-1 (AWP-CTL-009).",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "i53": {
+      "description": "Signed 64-bit value carried as a JSON integer; bounded by ±(2^53-1) (AWP-CTL-009).",
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "ts_mono_ns": { "$ref": "#/$defs/u53", "description": "Nanoseconds on the session monotonic clock (AWP-CLK-001)." },
+    "ts_sim_ns": { "$ref": "#/$defs/i53", "description": "Simulated time in nanoseconds (AWP-CLK-003)." },
+    "ts_send_ns": { "$ref": "#/$defs/u53", "description": "Session-clock time at which a frame was handed to the transport (AWP-OBS-006)." },
+    "agent_ns": { "$ref": "#/$defs/u53", "description": "Nanoseconds on the agent's monotonic clock (AWP-CLK-006)." },
+    "tick": { "$ref": "#/$defs/u53", "description": "Lockstep tick number." },
+    "seq": { "$ref": "#/$defs/u53", "description": "Per-channel frame sequence number (AWP-DAT-001)." },
+    "status_seq": { "$ref": "#/$defs/u53", "description": "Per-session notification sequence shared by action.status, world.event, and session.state (AWP-CTL-008)." },
+    "session_id": { "type": "string", "minLength": 1, "maxLength": 128, "description": "World-assigned session identifier; not a credential (AWP-SES-009)." },
+    "session_state": { "type": "string", "enum": ["ready", "active", "suspended", "closed"] },
+    "channel_id": { "type": "integer", "minimum": 1, "maximum": 65535, "description": "Channels ≥ 1; channel 0 is the control channel, which carries no frames (AWP-TRN-005)." },
+    "channel_grant": {
+      "description": "A granted channel subscription as enumerated in session.ready and obs.subscribe results (AWP-NEG-001).",
+      "type": "object",
+      "properties": {
+        "channel": { "$ref": "#/$defs/identifier" },
+        "rate_hz": { "oneOf": [{ "type": "number", "exclusiveMinimum": 0 }, { "type": "null" }] },
+        "channel_id": { "$ref": "#/$defs/channel_id" }
+      },
+      "required": ["channel", "rate_hz", "channel_id"],
+      "x-awp-closed": true
+    },
+    "latency_stats": {
+      "description": "Distribution of a latency or staleness quantity over a measurement window, in nanoseconds. Present only when count > 0.",
+      "type": "object",
+      "properties": {
+        "count": { "$ref": "#/$defs/u53", "description": "Samples in the window." },
+        "p50": { "$ref": "#/$defs/u53" },
+        "p95": { "$ref": "#/$defs/u53" },
+        "max": { "$ref": "#/$defs/u53" }
+      },
+      "required": ["count", "p50", "p95"],
+      "x-awp-closed": true
+    },
+    "per_channel": {
+      "description": "Object keyed by the decimal channel_id assigned in session.ready.",
+      "type": "object",
+      "propertyNames": { "pattern": "^[1-9][0-9]{0,4}$" }
+    },
+    "identifier": {
+      "description": "Names for channels, action types, embodiments, frames, entities.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z_][A-Za-z0-9_.:-]*$"
+    },
+    "action_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "protocol_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "vendor_key": {
+      "description": "Extension key naming per AWP-VER-004.",
+      "type": "string",
+      "pattern": "^x-[a-z0-9]+\\.[A-Za-z0-9_.-]+$"
+    },
+    "extensions": {
+      "description": "Vendor extension map; keys use the x-<vendor>. prefix (AWP-VER-004).",
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/vendor_key" }
+    },
+    "quaternion": {
+      "description": "Unit quaternion [x, y, z, w] (AWP-UNI-002).",
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "vec3_m": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "transform": {
+      "type": "object",
+      "properties": { "p_m": { "$ref": "#/$defs/vec3_m" }, "q": { "$ref": "#/$defs/quaternion" } },
+      "required": ["p_m", "q"],
+      "x-awp-closed": true
+    },
+    "pose": {
+      "description": "A pose in a named frame (AWP-UNI-003).",
+      "type": "object",
+      "properties": {
+        "frame": { "$ref": "#/$defs/identifier" },
+        "p_m": { "$ref": "#/$defs/vec3_m" },
+        "q": { "$ref": "#/$defs/quaternion" }
+      },
+      "required": ["frame", "p_m", "q"],
+      "x-awp-closed": true
+    },
+    "time_model": { "type": "string", "enum": ["lockstep", "streaming"] },
+    "loss_class": { "type": "string", "enum": ["reliable", "latest-wins"] },
+    "action_state": {
+      "type": "string",
+      "enum": ["pending_approval", "queued", "accepted", "executing", "cancelling", "rejected", "completed", "failed", "preempted", "cancelled"]
+    },
+    "terminal_state": { "type": "string", "enum": ["rejected", "completed", "failed", "preempted", "cancelled"] },
+    "status_reason": {
+      "description": "Status reason registry (spec/loop/events-and-errors#status-reasons) or a vendor reason.",
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "params_invalid", "forbidden", "envelope", "approval_denied", "approval_timeout", "deadline_exceeded", "stale_intent",
+            "cancelled_by_agent", "superseded", "e_stop", "connection_lost", "safe_state", "session_closed",
+            "world_reset", "transferred", "abort_failed", "watchdog", "world_error"
+          ]
+        },
+        { "$ref": "#/$defs/vendor_key" }
+      ]
+    },
+    "preemption_policy": { "type": "string", "enum": ["queue", "replace", "blend", "reject"] },
+    "admin_operation": { "type": "string", "enum": ["snapshot", "restore", "reset", "tick"] },
+    "content_block": {
+      "description": "Task content block (AWP-TSK-002). text is Markdown; other types are world-defined.",
+      "type": "object",
+      "properties": { "type": { "type": "string", "minLength": 1 } },
+      "required": ["type"],
+      "if": { "properties": { "type": { "const": "text" } } },
+      "then": { "properties": { "text": { "type": "string" } }, "required": ["text"] }
+    },
+    "task": {
+      "type": "object",
+      "properties": {
+        "content": { "type": "array", "items": { "$ref": "#/$defs/content_block" }, "minItems": 1 }
+      },
+      "required": ["content"],
+      "x-awp-closed": true
+    },
+    "json_schema": {
+      "description": "An embedded JSON Schema 2020-12 document (AWP-MAN-002).",
+      "$ref": "https://json-schema.org/draft/2020-12/schema"
+    }
+  }
+}

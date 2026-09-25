@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.venv/
+awp-audit/
+*.log
+/scratch/
+dist-test/

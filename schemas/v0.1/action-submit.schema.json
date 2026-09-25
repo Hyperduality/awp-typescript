@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/action-submit.schema.json",
+  "title": "action.submit params",
+  "type": "object",
+  "properties": {
+    "action_id": { "$ref": "common.schema.json#/$defs/action_id" },
+    "type": { "$ref": "common.schema.json#/$defs/identifier" },
+    "params": { "type": "object" },
+    "embodiment_id": { "$ref": "common.schema.json#/$defs/identifier", "description": "Required in multi-bind sessions (AWP-EMB-005)." },
+    "preempt": { "$ref": "common.schema.json#/$defs/preemption_policy" },
+    "deadline_ms": { "type": "integer", "minimum": 1, "description": "From world receipt; covers approval and queue wait (AWP-ACT-004)." },
+    "basis_ts_mono_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns", "description": "Capture time of the newest observation this intent relies on (AWP-ACT-007)." },
+    "valid_until_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns", "description": "Session-clock instant after which the intent must not begin executing (AWP-ACT-007)." }
+  },
+  "required": ["action_id", "type", "params"],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

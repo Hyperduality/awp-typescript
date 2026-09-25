@@ -1,0 +1,200 @@
+{
+  "$comment": "Generated from spec/action-lifecycle.yaml by scripts/sync-schemas.mjs; do not edit.",
+  "states": {
+    "submitted": "transient",
+    "pending_approval": "pre-execution",
+    "queued": "pre-execution",
+    "accepted": "pre-execution",
+    "executing": "execution",
+    "cancelling": "execution",
+    "rejected": "terminal",
+    "completed": "terminal",
+    "failed": "terminal",
+    "preempted": "terminal",
+    "cancelled": "terminal"
+  },
+  "pre_execution_cancel": [
+    "cancelled_by_agent",
+    "e_stop",
+    "safe_state",
+    "session_closed",
+    "world_reset",
+    "transferred",
+    "superseded"
+  ],
+  "transitions": [
+    {
+      "from": "submitted",
+      "to": "rejected",
+      "label": "validation, grant, envelope, or intent check fails",
+      "wire": "error"
+    },
+    {
+      "from": "submitted",
+      "to": "pending_approval",
+      "label": "type requires approval"
+    },
+    {
+      "from": "submitted",
+      "to": "queued",
+      "label": "group busy and preempt is queue"
+    },
+    {
+      "from": "submitted",
+      "to": "accepted",
+      "label": "admitted"
+    },
+    {
+      "from": "pending_approval",
+      "to": "queued",
+      "label": "approved and group busy"
+    },
+    {
+      "from": "pending_approval",
+      "to": "accepted",
+      "label": "approved"
+    },
+    {
+      "from": "pending_approval",
+      "to": "rejected",
+      "label": "denied, timeout, deadline, re-check fails",
+      "reasons": [
+        "approval_denied",
+        "approval_timeout",
+        "deadline_exceeded",
+        "stale_intent",
+        "forbidden",
+        "envelope"
+      ]
+    },
+    {
+      "from": "pending_approval",
+      "to": "cancelled",
+      "label": "cancel, e-stop, safe state, close, reset, transfer, superseded",
+      "reasons": [
+        "cancelled_by_agent",
+        "e_stop",
+        "safe_state",
+        "session_closed",
+        "world_reset",
+        "transferred",
+        "superseded"
+      ]
+    },
+    {
+      "from": "queued",
+      "to": "accepted",
+      "label": "group free"
+    },
+    {
+      "from": "queued",
+      "to": "rejected",
+      "label": "deadline or re-check fails",
+      "reasons": [
+        "deadline_exceeded",
+        "stale_intent",
+        "forbidden",
+        "envelope"
+      ]
+    },
+    {
+      "from": "queued",
+      "to": "cancelled",
+      "label": "cancel, e-stop, safe state, close, reset, transfer, superseded",
+      "reasons": [
+        "cancelled_by_agent",
+        "e_stop",
+        "safe_state",
+        "session_closed",
+        "world_reset",
+        "transferred",
+        "superseded"
+      ]
+    },
+    {
+      "from": "accepted",
+      "to": "executing",
+      "label": "execution begins"
+    },
+    {
+      "from": "accepted",
+      "to": "rejected",
+      "label": "deadline or validity passes before execution",
+      "reasons": [
+        "deadline_exceeded",
+        "stale_intent"
+      ]
+    },
+    {
+      "from": "accepted",
+      "to": "cancelled",
+      "label": "cancel, e-stop, safe state, close, reset, transfer, superseded",
+      "reasons": [
+        "cancelled_by_agent",
+        "e_stop",
+        "safe_state",
+        "session_closed",
+        "world_reset",
+        "transferred",
+        "superseded"
+      ]
+    },
+    {
+      "from": "executing",
+      "to": "completed",
+      "label": "goal reached"
+    },
+    {
+      "from": "executing",
+      "to": "failed",
+      "label": "deadline, e-stop, safe state, envelope, watchdog, error",
+      "reasons": [
+        "deadline_exceeded",
+        "e_stop",
+        "connection_lost",
+        "envelope",
+        "watchdog",
+        "world_error"
+      ]
+    },
+    {
+      "from": "executing",
+      "to": "preempted",
+      "label": "newer replace or blend, transfer",
+      "reasons": [
+        "transferred"
+      ]
+    },
+    {
+      "from": "executing",
+      "to": "cancelling",
+      "label": "cancel, close, reset",
+      "reasons": [
+        "cancelled_by_agent",
+        "session_closed",
+        "world_reset"
+      ]
+    },
+    {
+      "from": "cancelling",
+      "to": "cancelled",
+      "label": "safe abort complete",
+      "reasons": [
+        "cancelled_by_agent",
+        "session_closed",
+        "world_reset"
+      ]
+    },
+    {
+      "from": "cancelling",
+      "to": "failed",
+      "label": "e-stop, safe state, abort fails",
+      "reasons": [
+        "e_stop",
+        "connection_lost",
+        "abort_failed",
+        "world_error"
+      ]
+    }
+  ]
+}

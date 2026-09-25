@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/action-status.schema.json",
+  "title": "action.status params (notification and pull result)",
+  "type": "object",
+  "properties": {
+    "action_id": { "$ref": "common.schema.json#/$defs/action_id" },
+    "state": { "$ref": "common.schema.json#/$defs/action_state" },
+    "status_seq": { "$ref": "common.schema.json#/$defs/status_seq" },
+    "ts_mono_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns" },
+    "tick": { "$ref": "common.schema.json#/$defs/tick", "description": "Lockstep: tick of the transition." },
+    "progress": { "type": "number", "minimum": 0, "maximum": 1 },
+    "reason": { "$ref": "common.schema.json#/$defs/status_reason" },
+    "detail": { "type": "string" },
+    "clamped": { "type": "boolean" },
+    "blended": { "type": "boolean" },
+    "aborted_at_progress": { "type": "number", "minimum": 0, "maximum": 1 },
+    "stream": {
+      "type": "object",
+      "description": "Streaming-duration actions (AWP-CMD-004).",
+      "properties": {
+        "frames_applied": { "$ref": "common.schema.json#/$defs/u53" },
+        "last_seq": { "$ref": "common.schema.json#/$defs/seq" },
+        "clamped_count": { "$ref": "common.schema.json#/$defs/u53" }
+      },
+      "required": ["frames_applied", "last_seq", "clamped_count"],
+      "additionalProperties": true
+    }
+  },
+  "required": ["action_id", "state", "status_seq", "ts_mono_ns"],
+  "allOf": [
+    {
+      "if": { "properties": { "state": { "enum": ["rejected", "failed", "cancelled"] } } },
+      "then": { "required": ["reason"] }
+    }
+  ],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/session-resume.schema.json",
+  "title": "session.resume params",
+  "type": "object",
+  "properties": {
+    "session_token": { "type": "string", "minLength": 1 },
+    "last_status_seq": { "$ref": "common.schema.json#/$defs/status_seq", "description": "Highest status_seq processed; 0 if none (AWP-CTL-008)." }
+  },
+  "required": ["session_token", "last_status_seq"],
+  "x-awp-closed": true
+}

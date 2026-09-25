@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/obs-report.schema.json",
+  "title": "obs.report params (receiver report, AWP-OBS-007)",
+  "description": "Agent-side delivery quality, staleness, and decision latency aggregated over the preceding window.",
+  "type": "object",
+  "properties": {
+    "window_ms": { "type": "integer", "minimum": 1, "description": "Measurement window the statistics cover." },
+    "sync": {
+      "type": "object",
+      "description": "Current clock-offset estimate (AWP-CLK-008).",
+      "properties": {
+        "offset_ns": { "$ref": "common.schema.json#/$defs/i53", "description": "session clock = agent clock + offset_ns." },
+        "rtt_ns": { "$ref": "common.schema.json#/$defs/u53", "description": "Round-trip time of the selected sample; the offset error is bounded by rtt_ns / 2." },
+        "samples": { "$ref": "common.schema.json#/$defs/u53", "description": "Exchanges completed so far in the session." }
+      },
+      "required": ["offset_ns", "rtt_ns"],
+      "x-awp-closed": true
+    },
+    "channels": {
+      "$ref": "common.schema.json#/$defs/per_channel",
+      "description": "Per observation channel that delivered frames in the window.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "frames": { "$ref": "common.schema.json#/$defs/u53", "description": "Frames received." },
+          "gaps": { "$ref": "common.schema.json#/$defs/u53", "description": "Frames missing, by seq; the gap before a resync frame is not counted (AWP-DAT-009)." },
+          "jitter_ns": { "$ref": "common.schema.json#/$defs/u53", "description": "Mean of |(R_j − R_i) − (S_j − S_i)| over consecutive frames; R is the agent clock at receipt, S is ts_send_ns." },
+          "staleness_ns": { "$ref": "common.schema.json#/$defs/latency_stats", "description": "Staleness at receipt: (agent receipt + offset_ns) − ts_mono_ns." }
+        },
+        "required": ["frames", "gaps"],
+        "x-awp-closed": true
+      }
+    },
+    "decision_latency_ns": { "$ref": "common.schema.json#/$defs/latency_stats", "description": "Agent receipt of the basis frame → action.submit transmitted, over submissions in the window." }
+  },
+  "required": ["window_ms", "sync", "channels"],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "x-awp-closed": true
+}

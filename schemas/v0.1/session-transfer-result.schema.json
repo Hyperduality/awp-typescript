@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/session-transfer-result.schema.json",
+  "title": "session.transfer result",
+  "type": "object",
+  "properties": {
+    "transfer_token": { "type": "string", "minLength": 1, "description": "Single-use credential; redacted in the audit log (AWP-EMB-003, AWP-AUD-006)." },
+    "expires_in_ms": { "type": "integer", "minimum": 1 }
+  },
+  "required": ["transfer_token", "expires_in_ms"],
+  "x-awp-closed": true
+}

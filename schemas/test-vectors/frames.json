@@ -1,0 +1,232 @@
+{
+  "$comment": "AWP frame test vectors (AWP-DAT-008). Decode `hex`; compare to `expect`, or require the error in `expect_error`. Generated with scripts/frame-codec.mjs.",
+  "version": 1,
+  "vectors": [
+    {
+      "name": "minimal",
+      "description": "No flags, no extensions, 16-byte JSON payload.",
+      "hex": "415750460100010001000000000000000000000000000000100000007b22617661746172223a5b322c335d7d",
+      "expect": {
+        "channel_id": 1,
+        "seq": 1,
+        "ts_mono_ns": 0,
+        "flags": 0,
+        "keyframe": false,
+        "end_of_burst": false,
+        "payload_len": 16,
+        "payload_hex": "7b22617661746172223a5b322c335d7d"
+      }
+    },
+    {
+      "name": "keyframe_tick",
+      "description": "Keyframe on a per-tick lockstep channel with tick=4212 (extension 0x01).",
+      "hex": "41575046010501002a0000000000000080c25993d4000000100000000a00010874100000000000007b22617661746172223a5b322c335d7d",
+      "expect": {
+        "channel_id": 1,
+        "seq": 42,
+        "ts_mono_ns": 913005200000,
+        "flags": 5,
+        "keyframe": true,
+        "end_of_burst": false,
+        "payload_len": 16,
+        "payload_hex": "7b22617661746172223a5b322c335d7d",
+        "tick": 4212
+      }
+    },
+    {
+      "name": "tick_and_ts_sim",
+      "description": "tick=4212 and ts_sim_ns=4212000000 (extensions 0x01 and 0x02); end-of-burst set.",
+      "hex": "4157504601060300070000000000000080c25993d400000010000000140001087410000000000000020800050efb000000007b22617661746172223a5b322c335d7d",
+      "expect": {
+        "channel_id": 3,
+        "seq": 7,
+        "ts_mono_ns": 913005200000,
+        "flags": 6,
+        "keyframe": false,
+        "end_of_burst": true,
+        "payload_len": 16,
+        "payload_hex": "7b22617661746172223a5b322c335d7d",
+        "tick": 4212,
+        "ts_sim_ns": 4212000000
+      }
+    },
+    {
+      "name": "negative_ts_sim",
+      "description": "ts_sim_ns is i64: negative value (sim time before anchor).",
+      "hex": "415750460104030008000000000000000100000000000000000000000a00020878ecffffffffffff",
+      "expect": {
+        "channel_id": 3,
+        "seq": 8,
+        "ts_mono_ns": 1,
+        "flags": 4,
+        "keyframe": false,
+        "end_of_burst": false,
+        "payload_len": 0,
+        "payload_hex": "",
+        "ts_sim_ns": -5000
+      }
+    },
+    {
+      "name": "streaming_ts_send",
+      "description": "Streaming observation frame: keyframe with ts_send_ns=913004120200 (extension 0x03), 8.2 ms after capture.",
+      "hex": "4157504601050100731000000000000080284993d4000000100000000a00030888484993d40000007b22617661746172223a5b322c335d7d",
+      "expect": {
+        "channel_id": 1,
+        "seq": 4211,
+        "ts_mono_ns": 913004112000,
+        "flags": 5,
+        "keyframe": true,
+        "end_of_burst": false,
+        "payload_len": 16,
+        "payload_hex": "7b22617661746172223a5b322c335d7d",
+        "ts_send_ns": 913004120200
+      }
+    },
+    {
+      "name": "unknown_extension",
+      "description": "Reserved type 0x3f (len 3) must be skipped; vendor type 0x9a (len 2) is surfaced.",
+      "hex": "415750460104020009000000000000000500000000000000100000001300010801000000000000003f03aabbcc9a02dead7b22617661746172223a5b322c335d7d",
+      "expect": {
+        "channel_id": 2,
+        "seq": 9,
+        "ts_mono_ns": 5,
+        "flags": 4,
+        "keyframe": false,
+        "end_of_burst": false,
+        "payload_len": 16,
+        "payload_hex": "7b22617661746172223a5b322c335d7d",
+        "tick": 1,
+        "vendor": [
+          {
+            "type": 154,
+            "value": [
+              222,
+              173
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "zero_payload",
+      "description": "Keyframe with payload_len=0 and no extensions.",
+      "hex": "415750460101090001000000000000000c0000000000000000000000",
+      "expect": {
+        "channel_id": 9,
+        "seq": 1,
+        "ts_mono_ns": 12,
+        "flags": 1,
+        "keyframe": true,
+        "end_of_burst": false,
+        "payload_len": 0,
+        "payload_hex": ""
+      }
+    },
+    {
+      "name": "reserved_bits_set",
+      "description": "Reserved flag bits 4-7 set by a newer sender; receiver ignores them (decoded flags mask to bits 0-3).",
+      "hex": "4157504601f1010002000000000000000300000000000000100000007b22617661746172223a5b322c335d7d",
+      "expect": {
+        "channel_id": 1,
+        "seq": 2,
+        "ts_mono_ns": 3,
+        "flags": 1,
+        "keyframe": true,
+        "end_of_burst": false,
+        "payload_len": 16,
+        "payload_hex": "7b22617661746172223a5b322c335d7d"
+      }
+    },
+    {
+      "name": "resync_keyframe",
+      "description": "First frame after resumption on a reliable channel: keyframe with resync (flag bit 3) and no extensions (AWP-DAT-009).",
+      "hex": "415750460109010003000000000000000400000000000000100000007b22617661746172223a5b322c335d7d",
+      "expect": {
+        "channel_id": 1,
+        "seq": 3,
+        "ts_mono_ns": 4,
+        "flags": 9,
+        "keyframe": true,
+        "end_of_burst": false,
+        "resync": true,
+        "payload_len": 16,
+        "payload_hex": "7b22617661746172223a5b322c335d7d"
+      }
+    },
+    {
+      "name": "max_seq_safe",
+      "description": "seq and ts_mono_ns at 2^53-1, the largest values permitted in JSON (AWP-CTL-009).",
+      "hex": "415750460100ffffffffffffffff1f00ffffffffffff1f0000000000",
+      "expect": {
+        "channel_id": 65535,
+        "seq": 9007199254740991,
+        "ts_mono_ns": 9007199254740991,
+        "flags": 0,
+        "keyframe": false,
+        "end_of_burst": false,
+        "payload_len": 0,
+        "payload_hex": ""
+      }
+    },
+    {
+      "name": "ext_len_exceeds_frame",
+      "description": "flags bit 2 set, ext_len=0x0020 but only 10 bytes follow.",
+      "hex": "41575046010401000100000000000000000000000000000000000000200001080100000000000000",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "wrong_registered_len",
+      "description": "tick (0x01) declared with len 4; registered length is 8.",
+      "hex": "415750460104010001000000000000000000000000000000000000000600010474100000",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "wrong_registered_len_ts_send",
+      "description": "ts_send_ns (0x03) declared with len 4; registered length is 8.",
+      "hex": "415750460104010001000000000000000000000000000000000000000600030401020304",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "duplicate_type",
+      "description": "Two tick entries in one frame.",
+      "hex": "4157504601040100010000000000000000000000000000000000000014000108010000000000000001080200000000000000",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "payload_len_mismatch",
+      "description": "payload_len says 4 but 2 bytes present.",
+      "hex": "41575046010001000100000000000000000000000000000004000000abcd",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "bad_magic",
+      "description": "Magic is not AWPF.",
+      "hex": "41575047010001000100000000000000000000000000000000000000",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "unknown_version",
+      "description": "Version 2: not a version this revision defines (AWP-DAT-010).",
+      "hex": "415750460200010001000000000000000000000000000000100000007b22617661746172223a5b322c335d7d",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "trailing_bytes",
+      "description": "One byte beyond the length the header gives (AWP-DAT-010).",
+      "hex": "415750460100010001000000000000000000000000000000100000007b22617661746172223a5b322c335d7d00",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "resync_without_keyframe",
+      "description": "Resync flag (bit 3) without keyframe (bit 0) (AWP-DAT-010).",
+      "hex": "415750460108010003000000000000000400000000000000100000007b22617661746172223a5b322c335d7d",
+      "expect_error": "AWP_MALFORMED"
+    },
+    {
+      "name": "seq_over_2p53",
+      "description": "seq = 2^53 exceeds the JSON-safe bound (AWP-CTL-009).",
+      "hex": "41575046010001000000000000002000000000000000000000000000",
+      "expect_error": "AWP_INTEGER_RANGE"
+    }
+  ]
+}

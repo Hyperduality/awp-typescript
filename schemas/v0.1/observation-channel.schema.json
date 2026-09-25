@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/observation-channel.schema.json",
+  "title": "Channel declaration",
+  "description": "An entry in world-manifest.observation_channels or world-manifest.command_channels (AWP-DAT-002, AWP-CMD-001).",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/identifier", "description": "Unique per world. awp.* names are reserved (awp.tf)." },
+    "modality": {
+      "description": "From the modality registry or x-<vendor>.<name> (AWP-MOD-002).",
+      "anyOf": [
+        { "type": "string", "enum": ["image/jpeg", "image/raw", "audio/pcm", "text/event+json", "proprio/json", "servo/json", "pointcloud/xyz32", "tensor/raw"] },
+        { "$ref": "common.schema.json#/$defs/vendor_key" }
+      ]
+    },
+    "rate_hz": {
+      "description": "Nominal push rate; null for per-tick lockstep channels.",
+      "oneOf": [{ "type": "number", "exclusiveMinimum": 0 }, { "type": "null" }]
+    },
+    "loss_class": { "$ref": "common.schema.json#/$defs/loss_class" },
+    "keyframe_interval": { "type": "integer", "minimum": 1, "description": "Frames between keyframes when deltas are used (AWP-OBS-004)." },
+    "stale_after_ms": { "type": "integer", "minimum": 1, "description": "Age after which frames are stale; drives channel_degraded on reliable channels (AWP-SAF-009). Default 2 × period." },
+    "schema": { "type": "object", "description": "Modality-specific parameters (dimensions, sample rates, event schema)." }
+  },
+  "required": ["id", "modality", "rate_hz", "loss_class", "schema"],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

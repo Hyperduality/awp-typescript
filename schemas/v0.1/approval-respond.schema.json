@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/approval-respond.schema.json",
+  "title": "safety.approval.respond params (AWP-APR-002)",
+  "type": "object",
+  "properties": {
+    "approval_id": { "type": "string", "minLength": 1 },
+    "decision": { "type": "string", "enum": ["approve", "deny"] },
+    "note": { "type": "string" },
+    "standing": {
+      "type": "object",
+      "description": "Scoped standing approval (AWP-APR-004); only with decision approve, on a world declaring safety_policy.standing_approvals.",
+      "properties": {
+        "scope": {
+          "type": "object",
+          "properties": {
+            "type": { "$ref": "common.schema.json#/$defs/identifier" },
+            "predicate": { "type": "object", "description": "JSON Schema the params must satisfy; absent, any params." }
+          },
+          "required": ["type"],
+          "x-awp-closed": true
+        },
+        "expires_at_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns", "description": "End of the grant, on the requesting session's clock." }
+      },
+      "required": ["scope", "expires_at_ns"],
+      "x-awp-closed": true
+    }
+  },
+  "required": ["approval_id", "decision"],
+  "x-awp-closed": true
+}

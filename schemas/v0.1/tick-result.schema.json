@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/tick-result.schema.json",
+  "title": "world.tick result (AWP-TIM-011)",
+  "type": "object",
+  "properties": { "tick": { "$ref": "common.schema.json#/$defs/tick" } },
+  "required": ["tick"],
+  "x-awp-closed": true
+}

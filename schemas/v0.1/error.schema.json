@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/error.schema.json",
+  "title": "JSON-RPC error object with AWP data (AWP-ERR-001)",
+  "type": "object",
+  "properties": {
+    "code": { "type": "integer" },
+    "message": { "type": "string", "pattern": "^AWP_[A-Z_]+$|^[A-Z][A-Za-z ]+$" },
+    "data": {
+      "type": "object",
+      "properties": {
+        "retryable": { "type": "boolean" },
+        "retry_after_ms": { "type": "integer", "minimum": 0 },
+        "detail": { "type": "string" }
+      },
+      "required": ["retryable"],
+      "additionalProperties": true
+    }
+  },
+  "required": ["code", "message"],
+  "if": { "properties": { "code": { "minimum": -32768, "maximum": -32000 } } },
+  "else": { "required": ["data"] },
+  "description": "AWP errors (codes 1000-4999) carry data.retryable; JSON-RPC reserved errors (-32768..-32000) MAY omit data (AWP-ERR-001).",
+  "x-awp-closed": true
+}

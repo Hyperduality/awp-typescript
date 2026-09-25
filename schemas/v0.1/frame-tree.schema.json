@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/frame-tree.schema.json",
+  "title": "Frame tree",
+  "description": "Named coordinate frames published in session.ready (AWP-UNI-003).",
+  "type": "object",
+  "properties": {
+    "frames": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/$defs/identifier" },
+          "parent": { "oneOf": [{ "$ref": "common.schema.json#/$defs/identifier" }, { "type": "null" }] },
+          "dynamic": { "type": "boolean", "default": false, "description": "Transform is published on awp.tf (AWP-UNI-004)." },
+          "transform": { "$ref": "common.schema.json#/$defs/transform" }
+        },
+        "required": ["id", "parent"],
+        "x-awp-closed": true
+      }
+    }
+  },
+  "required": ["frames"],
+  "x-awp-closed": true
+}

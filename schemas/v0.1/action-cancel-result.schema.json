@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/action-cancel-result.schema.json",
+  "title": "action.cancel result (AWP-LIF-005)",
+  "type": "object",
+  "properties": {
+    "action_id": { "$ref": "common.schema.json#/$defs/action_id" },
+    "state": { "$ref": "common.schema.json#/$defs/action_state" },
+    "status_seq": { "$ref": "common.schema.json#/$defs/status_seq" }
+  },
+  "required": ["action_id", "state", "status_seq"],
+  "additionalProperties": true
+}

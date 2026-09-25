@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/ping-result.schema.json",
+  "title": "ping result (pong, AWP-CLK-007)",
+  "type": "object",
+  "properties": {
+    "origin_ns": { "$ref": "common.schema.json#/$defs/u53", "description": "Echoed from the ping." },
+    "receive_ns": { "$ref": "common.schema.json#/$defs/u53", "description": "Responder's clock when the ping was received." },
+    "transmit_ns": { "$ref": "common.schema.json#/$defs/u53", "description": "Responder's clock when this result was transmitted." }
+  },
+  "required": ["origin_ns", "receive_ns", "transmit_ns"],
+  "x-awp-closed": true
+}

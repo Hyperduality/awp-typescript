@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/profiles/gui-actions.schema.json",
+  "title": "GUI profile action params (AWP-GUI-002)",
+  "description": "Normative params_schema for the five required GUI action types. Coordinates are viewport-relative pixels; _px is the documented exception to AWP-UNI-001.",
+  "$defs": {
+    "point_px": {
+      "type": "object",
+      "properties": {
+        "x_px": { "type": "number", "minimum": 0 },
+        "y_px": { "type": "number", "minimum": 0 }
+      },
+      "required": ["x_px", "y_px"],
+      "x-awp-closed": true
+    },
+    "pointer_move": { "$ref": "#/$defs/point_px" },
+    "pointer_click": {
+      "type": "object",
+      "properties": {
+        "x_px": { "type": "number", "minimum": 0 },
+        "y_px": { "type": "number", "minimum": 0 },
+        "button": { "type": "string", "enum": ["left", "middle", "right"], "default": "left" },
+        "clicks": { "type": "integer", "minimum": 1, "maximum": 3, "default": 1 }
+      },
+      "required": ["x_px", "y_px"],
+      "x-awp-closed": true
+    },
+    "key_input": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string", "description": "Text to type; mutually exclusive with keys." },
+        "keys": { "type": "array", "items": { "type": "string" }, "minItems": 1, "description": "Key chord, e.g. [\"Control\", \"a\"]." }
+      },
+      "oneOf": [{ "required": ["text"] }, { "required": ["keys"] }],
+      "x-awp-closed": true
+    },
+    "scroll": {
+      "type": "object",
+      "properties": {
+        "x_px": { "type": "number", "minimum": 0 },
+        "y_px": { "type": "number", "minimum": 0 },
+        "dx_px": { "type": "number" },
+        "dy_px": { "type": "number" }
+      },
+      "required": ["dx_px", "dy_px"],
+      "x-awp-closed": true
+    },
+    "navigate": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "format": "uri" }
+      },
+      "required": ["url"],
+      "x-awp-closed": true
+    }
+  }
+}

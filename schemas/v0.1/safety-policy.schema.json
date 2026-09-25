@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/safety-policy.schema.json",
+  "title": "Safety policy",
+  "description": "world-manifest.safety_policy (spec/safety/envelopes, approval, safe-state, audit-log).",
+  "type": "object",
+  "properties": {
+    "envelopes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/envelope" }
+    },
+    "safe_state": {
+      "type": "object",
+      "description": "Watchdog and safe-state behavior (AWP-SAF-003). Required when the world offers streaming.",
+      "properties": {
+        "behavior": {
+          "anyOf": [
+            { "type": "string", "enum": ["hold", "safe_stop", "park"] },
+            { "$ref": "common.schema.json#/$defs/vendor_key" }
+          ]
+        },
+        "watchdog_ms": { "type": "integer", "minimum": 1, "description": "Time since the last agent control message before safe state is entered. MUST be ≤ reconnect_window_ms." }
+      },
+      "required": ["behavior", "watchdog_ms"],
+      "x-awp-closed": true
+    },
+    "max_basis_age_ms": { "type": "integer", "minimum": 1, "description": "Maximum age of an intent's basis observation when execution begins (AWP-SAF-013). Required by the robotics profile (AWP-ROB-005)." },
+    "approval_timeout_ms": { "type": "integer", "minimum": 1, "default": 60000, "description": "AWP-APR-003." },
+    "standing_approvals": { "type": "boolean", "default": false, "description": "The world accepts scoped standing approvals (AWP-APR-004)." },
+    "approval_channel": { "type": "string", "description": "Where approval requests are routed (deployment-defined)." },
+    "audit": {
+      "type": "object",
+      "properties": {
+        "redact_paths": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^/" },
+          "description": "JSON pointers (relative to params or result) redacted in the audit log (AWP-AUD-006)."
+        }
+      },
+      "x-awp-closed": true
+    }
+  },
+  "required": ["envelopes"],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true,
+  "$defs": {
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "embodiment": { "$ref": "common.schema.json#/$defs/identifier" },
+        "spatial": {
+          "type": "object",
+          "properties": {
+            "frame": { "$ref": "common.schema.json#/$defs/identifier" },
+            "aabb_m": {
+              "type": "array",
+              "items": { "$ref": "common.schema.json#/$defs/vec3_m" },
+              "minItems": 2,
+              "maxItems": 2,
+              "description": "[min, max] corners."
+            }
+          },
+          "required": ["frame", "aabb_m"],
+          "x-awp-closed": true
+        },
+        "max_velocity_mps": { "type": "number", "exclusiveMinimum": 0 },
+        "max_force_n": { "type": "number", "exclusiveMinimum": 0, "description": "Declare only if the world can measure force (AWP-ROB-002)." },
+        "max_action_rate_hz": { "type": "number", "exclusiveMinimum": 0 },
+        "enforcement": {
+          "type": "string",
+          "enum": ["command_check", "measured", "both"],
+          "default": "command_check",
+          "description": "command_check: requested commands are clamped/rejected; measured: executed motion is monitored; both (AWP-ENV-005)."
+        },
+        "on_violation": { "type": "string", "enum": ["clamp", "reject"] }
+      },
+      "required": ["embodiment", "on_violation"],
+      "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+      "additionalProperties": true
+    }
+  }
+}

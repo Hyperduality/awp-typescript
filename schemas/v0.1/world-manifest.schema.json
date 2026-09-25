@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/world-manifest.schema.json",
+  "title": "World manifest",
+  "description": "Returned by initialize and world.manifest (spec/session/world-manifest).",
+  "type": "object",
+  "properties": {
+    "protocol_version": { "$ref": "common.schema.json#/$defs/protocol_version" },
+    "world": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "vendor": { "type": "string", "minLength": 1 }
+      },
+      "required": ["name", "version", "vendor"],
+      "additionalProperties": true
+    },
+    "time_models": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/time_model" }, "minItems": 1, "uniqueItems": true },
+    "tick_policy": { "type": "string", "enum": ["on_tick"], "description": "Required when lockstep is offered; v0.1 defines only on_tick (AWP-TIM-002)." },
+    "tick_authority": { "type": "string", "enum": ["any_session", "barrier"], "description": "Who may advance a lockstep world (AWP-TIM-012). Required when lockstep is offered." },
+    "capabilities": {
+      "type": "object",
+      "description": "Open map; v0.1 standard keys listed. Vendor keys use x-<vendor>. (AWP-MAN-004).",
+      "properties": {
+        "seed": { "type": "boolean" },
+        "snapshot": { "type": "boolean" },
+        "replay": { "type": "boolean" },
+        "command_channels": { "type": "boolean" },
+        "task": { "type": "boolean" }
+      },
+      "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+      "additionalProperties": true
+    },
+    "initial_states": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/identifier" }, "minItems": 1, "description": "Named initial states for world.reset (AWP-SIM-001)." },
+    "embodiments": { "type": "array", "items": { "$ref": "embodiment.schema.json" }, "minItems": 1 },
+    "observation_channels": { "type": "array", "items": { "$ref": "observation-channel.schema.json" }, "minItems": 1 },
+    "command_channels": { "type": "array", "items": { "$ref": "observation-channel.schema.json" }, "description": "Present only with capabilities.command_channels (AWP-MAN-005)." },
+    "action_schemas": { "type": "array", "items": { "$ref": "action-schema.schema.json" }, "minItems": 1 },
+    "safety_policy": { "$ref": "safety-policy.schema.json" },
+    "$defs": { "type": "object", "description": "Shared sub-schemas referenced by params_schema entries via #/$defs/<name>." },
+    "extensions": { "$ref": "common.schema.json#/$defs/extensions" }
+  },
+  "required": ["protocol_version", "world", "time_models", "embodiments", "observation_channels", "action_schemas", "safety_policy"],
+  "allOf": [
+    {
+      "if": { "properties": { "time_models": { "contains": { "const": "lockstep" } } } },
+      "then": { "required": ["tick_policy", "tick_authority"] }
+    },
+    {
+      "if": { "properties": { "time_models": { "contains": { "const": "streaming" } } } },
+      "then": { "properties": { "safety_policy": { "required": ["safe_state"] } } }
+    },
+    {
+      "if": { "required": ["command_channels"] },
+      "then": { "properties": { "capabilities": { "properties": { "command_channels": { "const": true } }, "required": ["command_channels"] } }, "required": ["capabilities"] }
+    }
+  ],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/session-state.schema.json",
+  "title": "session.state params (AWP-SES-007)",
+  "type": "object",
+  "properties": {
+    "state": {"$ref": "common.schema.json#/$defs/session_state"},
+    "status_seq": {"$ref": "common.schema.json#/$defs/status_seq"},
+    "ts_mono_ns": {"$ref": "common.schema.json#/$defs/ts_mono_ns"},
+    "reason": {"type": "string", "enum": ["opened", "first_activity", "connection_lost", "resumed", "session_closed", "window_expired", "world_shutdown", "transferred", "connection_replaced", "protocol_error"], "description": "Cause of the transition."}
+  },
+  "required": ["state", "status_seq", "ts_mono_ns"],
+  "x-awp-closed": true
+}

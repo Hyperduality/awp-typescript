@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/subscribe-result.schema.json",
+  "title": "obs.subscribe / obs.unsubscribe result (AWP-NEG-004)",
+  "type": "object",
+  "properties": {
+    "granted": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/channel_grant"}, "description": "The session's complete channel grant list after the change."}
+  },
+  "required": ["granted"],
+  "x-awp-closed": true
+}

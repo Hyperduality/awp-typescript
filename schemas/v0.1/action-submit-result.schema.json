@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/action-submit-result.schema.json",
+  "title": "action.submit result (admission acknowledgement, AWP-LIF-002)",
+  "type": "object",
+  "properties": {
+    "action_id": { "$ref": "common.schema.json#/$defs/action_id" },
+    "state": { "$ref": "common.schema.json#/$defs/action_state", "description": "A first submission reports pending_approval, queued, or accepted. An idempotent resubmission reports the action's current state (AWP-ACT-001)." },
+    "status_seq": { "$ref": "common.schema.json#/$defs/status_seq", "description": "The transition this result reports; for an idempotent resubmission, the action's most recent transition (no new status_seq is consumed)." },
+    "received_ts_mono_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns", "description": "Session-clock time the world received the submission; origin of deadline_ms and of admission latency." },
+    "ts_mono_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns", "description": "Time of the reported transition." },
+    "approval_id": { "type": "string", "minLength": 1, "description": "Present when the action was admitted under a standing approval: the approval_id of the request the grant answered (AWP-APR-004)." },
+    "reason": { "$ref": "common.schema.json#/$defs/status_reason", "description": "Present when an idempotent resubmission reports a rejected, failed, or cancelled action." }
+  },
+  "required": ["action_id", "state", "status_seq", "received_ts_mono_ns", "ts_mono_ns"],
+  "additionalProperties": true
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/snapshot-result.schema.json",
+  "title": "world.snapshot result (AWP-REP-002)",
+  "type": "object",
+  "properties": {
+    "snapshot_token": {"type": "string", "minLength": 8, "description": "Opaque credential; redacted in the audit log (AWP-AUD-006)."}
+  },
+  "required": ["snapshot_token"],
+  "x-awp-closed": true
+}

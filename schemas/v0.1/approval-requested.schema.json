@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/approval-requested.schema.json",
+  "title": "safety.approval_requested params (AWP-APR-001)",
+  "type": "object",
+  "properties": {
+    "approval_id": { "type": "string", "minLength": 1 },
+    "action_id": { "$ref": "common.schema.json#/$defs/action_id" },
+    "type": { "$ref": "common.schema.json#/$defs/identifier" },
+    "params": { "type": "object" },
+    "requester": {
+      "type": "object",
+      "properties": {
+        "session": { "type": "string" },
+        "embodiment": { "$ref": "common.schema.json#/$defs/identifier" }
+      },
+      "required": ["session"],
+      "additionalProperties": true
+    },
+    "task": { "$ref": "common.schema.json#/$defs/task" },
+    "expires_at_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns" }
+  },
+  "required": ["approval_id", "action_id", "type", "params", "requester", "expires_at_ns"],
+  "additionalProperties": true
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/restore.schema.json",
+  "title": "world.restore params (AWP-REP-002, AWP-PRM-006)",
+  "type": "object",
+  "properties": {
+    "snapshot_token": {"type": "string", "minLength": 8}
+  },
+  "required": ["snapshot_token"],
+  "x-awp-closed": true
+}

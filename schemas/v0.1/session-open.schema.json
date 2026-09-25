@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/session-open.schema.json",
+  "title": "session.open params",
+  "type": "object",
+  "properties": {
+    "embodiment": { "$ref": "common.schema.json#/$defs/identifier", "description": "Omit for an observer session (AWP-EMB-004)." },
+    "embodiments": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/identifier" },
+      "minItems": 2,
+      "uniqueItems": true,
+      "description": "Bind several embodiments of one multi_bind_group (AWP-EMB-005). Mutually exclusive with embodiment."
+    },
+    "mode": { "$ref": "common.schema.json#/$defs/time_model" },
+    "subscribe": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "channel": { "$ref": "common.schema.json#/$defs/identifier" },
+          "rate_hz": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "required": ["channel"],
+        "x-awp-closed": true
+      }
+    },
+    "action_types": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/identifier" }, "uniqueItems": true },
+    "admin": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/admin_operation" }, "uniqueItems": true, "description": "Requested administrative operations (AWP-PRM-005)." },
+    "seed": { "$ref": "common.schema.json#/$defs/u53" },
+    "takeover": { "type": "boolean" },
+    "transfer_token": { "type": "string", "minLength": 1 },
+    "task": { "$ref": "common.schema.json#/$defs/task" },
+    "extensions": { "$ref": "common.schema.json#/$defs/extensions" }
+  },
+  "required": ["mode"],
+  "not": { "required": ["embodiment", "embodiments"] },
+  "dependentRequired": { "takeover": ["transfer_token"] },
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/world-event.schema.json",
+  "title": "world.event params (AWP-EVT-001)",
+  "type": "object",
+  "properties": {
+    "event": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "entity_appeared", "entity_removed", "collision", "e_stop_engaged", "e_stop_released", "envelope_violation",
+            "grant_expired", "safe_state_entered", "safe_state_exited", "channel_degraded", "world_resetting", "world_shutdown", "embodiment_transferred"
+          ]
+        },
+        { "$ref": "common.schema.json#/$defs/vendor_key" }
+      ]
+    },
+    "status_seq": { "$ref": "common.schema.json#/$defs/status_seq" },
+    "ts_mono_ns": { "$ref": "common.schema.json#/$defs/ts_mono_ns" },
+    "tick": { "$ref": "common.schema.json#/$defs/tick", "description": "Lockstep: the tick of the event." },
+    "detail": { "type": "object" }
+  },
+  "required": ["event", "status_seq", "ts_mono_ns"],
+  "allOf": [
+    {
+      "if": { "properties": { "event": { "const": "world_resetting" } } },
+      "then": {
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "initiator": { "type": "string" },
+              "kind": { "type": "string", "enum": ["reset", "restore"] },
+              "initial_state": { "type": "string" }
+            },
+            "required": ["initiator", "kind"]
+          }
+        },
+        "required": ["detail"]
+      }
+    }
+  ],
+  "additionalProperties": true
+}

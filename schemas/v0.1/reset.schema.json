@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/reset.schema.json",
+  "title": "world.reset params (AWP-SIM-001, AWP-PRM-006)",
+  "type": "object",
+  "properties": {
+    "initial_state": {"$ref": "common.schema.json#/$defs/identifier", "description": "Default: the manifest's first initial_states entry."},
+    "seed": {"$ref": "common.schema.json#/$defs/u53", "description": "Requires capabilities.seed."}
+  },
+  "required": [],
+  "x-awp-closed": true
+}

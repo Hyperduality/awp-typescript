@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/empty-result.schema.json",
+  "title": "Empty params or result",
+  "description": "Used by session.close, world.manifest, world.snapshot params, task.update result, and safety.approval.respond result.",
+  "type": "object",
+  "x-awp-closed": true
+}

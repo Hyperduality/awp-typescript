@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/embodiment.schema.json",
+  "title": "Embodiment declaration",
+  "description": "An entry in world-manifest.embodiments (spec/session/embodiments).",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "kind": { "type": "string", "minLength": 1, "description": "Free-form class: manipulator, mobile_base, avatar, cursor, camera_rig, ..." },
+    "shared_control": { "type": "boolean", "default": false, "description": "May be bound by several sessions at once; arbitration documented in arbitration (AWP-MA-003)." },
+    "arbitration": { "type": "string", "description": "Required when shared_control is true: priority, blend, or a vendor rule." },
+    "multi_bind_group": { "$ref": "common.schema.json#/$defs/identifier", "description": "Embodiments sharing a group may be bound together by one session; submissions then carry embodiment_id (AWP-EMB-005)." },
+    "action_types": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/identifier" }, "uniqueItems": true },
+    "channels": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/identifier" }, "uniqueItems": true },
+    "description": { "type": "string" }
+  },
+  "required": ["id", "kind", "action_types", "channels"],
+  "if": { "required": ["shared_control"], "properties": { "shared_control": { "const": true } } },
+  "then": { "required": ["arbitration"] },
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

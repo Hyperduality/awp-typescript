@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/reset-result.schema.json",
+  "title": "world.restore / world.reset result (AWP-PRM-006)",
+  "type": "object",
+  "properties": {
+    "tick": {"$ref": "common.schema.json#/$defs/tick", "description": "Present in lockstep sessions."}
+  },
+  "required": [],
+  "x-awp-closed": true
+}

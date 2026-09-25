@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/task-update.schema.json",
+  "title": "task.update params (AWP-TSK-001..003)",
+  "type": "object",
+  "properties": {
+    "task": { "$ref": "common.schema.json#/$defs/task" }
+  },
+  "required": ["task"],
+  "x-awp-closed": true
+}

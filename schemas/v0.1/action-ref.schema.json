@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/action-ref.schema.json",
+  "title": "action.cancel and action.status (pull) params",
+  "type": "object",
+  "properties": {
+    "action_id": {"$ref": "common.schema.json#/$defs/action_id"}
+  },
+  "required": ["action_id"],
+  "x-awp-closed": true
+}

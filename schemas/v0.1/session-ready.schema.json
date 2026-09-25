@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/session-ready.schema.json",
+  "title": "session.ready (result of session.open and session.resume)",
+  "type": "object",
+  "properties": {
+    "session_id": { "$ref": "common.schema.json#/$defs/session_id" },
+    "session_token": { "type": "string", "minLength": 16, "description": "Credential; redacted in the audit log (AWP-SEC-003, AWP-AUD-006)." },
+    "reconnect_window_ms": { "type": "integer", "minimum": 0, "description": "AWP-CTL-005." },
+    "replay_to_status_seq": { "$ref": "common.schema.json#/$defs/status_seq", "description": "session.resume result only: the highest status_seq assigned before resumption. Replay ends with this notification; later ones are live (AWP-CTL-008)." },
+    "heartbeat_interval_ms": { "type": "integer", "minimum": 100, "description": "AWP-SAF-001." },
+    "granted": {
+      "type": "object",
+      "properties": {
+        "channels": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/channel_grant" } },
+        "action_types": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/identifier" }, "uniqueItems": true },
+        "admin": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/admin_operation" }, "uniqueItems": true, "default": [] },
+        "envelopes": { "type": "array", "items": { "$ref": "safety-policy.schema.json#/$defs/envelope" } },
+        "expires_at": { "$ref": "common.schema.json#/$defs/ts_mono_ns", "description": "Grant expiry (AWP-PRM-003)." }
+      },
+      "required": ["channels", "action_types", "envelopes"],
+      "x-awp-closed": true
+    },
+    "stream_endpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "binding": { "type": "string", "enum": ["inline", "ws", "grpc", "webrtc", "webtransport", "shm"], "description": "Stream binding (AWP-TRN-003)." },
+          "url": { "type": "string" },
+          "signaling": { "type": "string" },
+          "channels": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/channel_id" }, "description": "Channels this endpoint carries; when omitted, every channel of the session, including channels subscribed later (AWP-TRN-012)." },
+          "max_frame_bytes": { "type": "integer", "minimum": 1024, "default": 16777216, "description": "Largest frame this endpoint carries (AWP-TRN-011)." }
+        },
+        "required": ["binding"],
+        "additionalProperties": true
+      },
+      "contains": { "properties": { "binding": { "const": "inline" } } }
+    },
+    "frame_tree": { "$ref": "frame-tree.schema.json" },
+    "clock_anchor": { "type": "string", "format": "date-time", "description": "Wall time at monotonic 0 (AWP-CLK-002)." },
+    "tick": { "$ref": "common.schema.json#/$defs/tick", "description": "Current tick; present in lockstep sessions (AWP-TIM-009)." },
+    "safe_state": { "type": "boolean", "description": "On session.resume: whether the embodiment is in safe state (AWP-SAF-008)." },
+    "extensions": { "$ref": "common.schema.json#/$defs/extensions" }
+  },
+  "required": ["session_id", "session_token", "reconnect_window_ms", "heartbeat_interval_ms", "granted", "stream_endpoints"],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

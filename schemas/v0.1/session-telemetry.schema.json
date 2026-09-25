@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/session-telemetry.schema.json",
+  "title": "session.telemetry params (AWP-TIM-006)",
+  "description": "World-side latency measurements aggregated over the preceding window. Each quantity is present whenever at least one sample fell in the window.",
+  "type": "object",
+  "properties": {
+    "window_ms": { "type": "integer", "minimum": 1, "description": "Measurement window the statistics cover." },
+    "observation_latency_ns": { "$ref": "common.schema.json#/$defs/latency_stats", "description": "Pipeline latency, ts_send_ns − ts_mono_ns, over every observation frame sent in the window." },
+    "admission_latency_ns": { "$ref": "common.schema.json#/$defs/latency_stats", "description": "Admission acknowledgement transmitted − received_ts_mono_ns, over every action.submit in the window." },
+    "observation_to_action_ns": { "$ref": "common.schema.json#/$defs/latency_stats", "description": "received_ts_mono_ns − basis_ts_mono_ns, over every submission in the window that carried a basis." },
+    "command_latency_ns": { "$ref": "common.schema.json#/$defs/latency_stats", "description": "World receipt − ts_mono_ns, over every command frame received in the window." },
+    "channels": {
+      "$ref": "common.schema.json#/$defs/per_channel",
+      "description": "Pipeline latency per observation channel, for every channel that sent frames in the window.",
+      "additionalProperties": { "$ref": "common.schema.json#/$defs/latency_stats" }
+    }
+  },
+  "required": ["window_ms"],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "x-awp-closed": true
+}

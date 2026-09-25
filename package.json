@@ -1,0 +1,68 @@
+{
+  "name": "@hyperduality/awp",
+  "version": "0.1.0-alpha.0",
+  "description": "TypeScript agent SDK for the Agent World Protocol (AWP), written from the specification (0.1-draft.9).",
+  "keywords": [
+    "agent-world-protocol",
+    "awp",
+    "agents",
+    "robotics",
+    "simulation",
+    "json-rpc",
+    "websocket"
+  ],
+  "homepage": "https://github.com/Hyperduality/awp-typescript#readme",
+  "bugs": {
+    "url": "https://github.com/Hyperduality/awp-typescript/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hyperduality/awp-typescript.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Hyperduality",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "awp-demo": "./dist/demo.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "schemas",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc -p tsconfig.test.json && node --test dist-test/test/*.test.js",
+    "test:ts": "node --test --experimental-strip-types test/*.test.ts",
+    "sync-schemas": "node scripts/sync-schemas.mjs",
+    "check-schemas": "node scripts/sync-schemas.mjs --check",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/ws": "^8.18.1",
+    "typescript": "^7.0.2",
+    "yaml": "^2.9.1"
+  },
+  "private": true
+}

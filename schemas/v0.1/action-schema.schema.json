@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/action-schema.schema.json",
+  "title": "Action type declaration",
+  "description": "An entry in world-manifest.action_schemas (spec/loop/actions, spec/loop/preemption, spec/loop/command-channels).",
+  "type": "object",
+  "properties": {
+    "type": { "$ref": "common.schema.json#/$defs/identifier", "description": "Action type name, unique per world." },
+    "params_schema": { "$ref": "common.schema.json#/$defs/json_schema", "description": "JSON Schema 2020-12 for params (AWP-MAN-002). Local $refs resolve against the manifest's $defs." },
+    "duration": { "type": "string", "enum": ["instant", "extended", "streaming"] },
+    "preemption": {
+      "description": "Declared policies the submitter may choose from (AWP-PRE-001).",
+      "oneOf": [
+        { "$ref": "common.schema.json#/$defs/preemption_policy" },
+        { "type": "array", "items": { "$ref": "common.schema.json#/$defs/preemption_policy" }, "minItems": 1, "uniqueItems": true }
+      ]
+    },
+    "concurrency_group": { "$ref": "common.schema.json#/$defs/identifier", "description": "Types sharing a group preempt one another (AWP-PRE-006)." },
+    "max_queue": { "type": "integer", "minimum": 1, "description": "Queue depth when queue is offered (AWP-PRE-002)." },
+    "requires_approval": { "type": "boolean", "default": false },
+    "command_channel": { "$ref": "common.schema.json#/$defs/identifier", "description": "Command channel this streaming type opens (AWP-CMD-002)." },
+    "watchdog_ms": { "type": "integer", "minimum": 1, "description": "Per-stream watchdog for streaming types (AWP-CMD-005)." },
+    "max_abort_ms": { "type": "integer", "minimum": 1, "description": "Upper bound on the cancelling state for this type (AWP-LIF-010)." },
+    "max_duration_ms": { "type": "integer", "minimum": 1, "description": "Extended types: longest execution the world permits; applies as a deadline when the submission's deadline_ms is absent or longer (AWP-ACT-008). Required for extended types in the robotics profile (AWP-ROB-007)." },
+    "description": { "type": "string" }
+  },
+  "required": ["type", "params_schema", "duration", "preemption"],
+  "allOf": [
+    {
+      "if": { "properties": { "duration": { "const": "streaming" } } },
+      "then": { "required": ["command_channel", "watchdog_ms"] },
+      "else": { "not": { "anyOf": [{ "required": ["command_channel"] }, { "required": ["watchdog_ms"] }] } }
+    }
+  ],
+  "patternProperties": { "^x-[a-z0-9]+\\.": {} },
+  "additionalProperties": true
+}

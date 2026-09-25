@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/ping.schema.json",
+  "title": "ping params (heartbeat and clock synchronization, AWP-CLK-007)",
+  "type": "object",
+  "properties": {
+    "origin_ns": { "$ref": "common.schema.json#/$defs/u53", "description": "Sender's clock at transmission: the session clock from the world, the agent clock from the agent." },
+    "last_status_seq": { "$ref": "common.schema.json#/$defs/status_seq", "description": "Agent pings in a session: highest status_seq the agent has processed, acknowledging delivery (AWP-CTL-010)." }
+  },
+  "required": ["origin_ns"],
+  "x-awp-closed": true
+}
