@@ -43,3 +43,32 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check-schemas -- --from agent-world-protocol
+
+  conformance:
+    name: awp-demo against the suite (${{ matrix.mode }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [lockstep, streaming]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: astral-sh/setup-uv@v10.2.0
+      - run: npm ci
+      - name: run awp-conformance against the demo agent
+        run: |
+          uvx --prerelease allow --from awp-conformance==0.1.0a4 awp-conformance agent \
+            --manifest conformance/manifest-${{ matrix.mode }}.json --frames conformance/frames.json \
+            --mode ${{ matrix.mode }} --out report -- node dist/demo.js --url '{url}' --token '{token}'
+      - name: the claim is AWP-conformant
+        run: |
+          python3 -c "import json, sys; c = json.load(open('report/report.json'))['claim']; print(c['wording']); sys.exit(c['status'] != 'conformant')"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-${{ matrix.mode }}
+          path: report/
