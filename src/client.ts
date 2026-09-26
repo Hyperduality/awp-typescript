@@ -6,6 +6,8 @@
  * A dropped control connection is resumed with `session.resume` and `last_status_seq` (AWP-CTL-005,
  * AWP-AGT-007); the embodiment is treated as in safe state until an action admitted after the
  * resumption executes.
+ *
+ * A client carries one session. Once it is closed, create a new client for the next one.
  */
 import { EventEmitter } from "node:events";
 import { randomBytes } from "node:crypto";
@@ -20,11 +22,12 @@ import {
   ManifestInvalidError,
   ProtocolError,
   SessionClosedError,
+  TimeoutError,
   UsageError,
 } from "./errors.ts";
 import { decodeInlineFrame, encodeBinaryFrame, encodeInlineFrame, type Frame, type FrameFields } from "./frames.ts";
 import { ActionRecord, type StatusUpdate } from "./lifecycle.ts";
-import { Manifest, checkManifest } from "./manifest.ts";
+import { Manifest, assertManifest } from "./manifest.ts";
 import { RpcConnection, type IncomingNotification, type IncomingRequest } from "./rpc.ts";
 import { PROTOCOL_ERROR_CLOSE, StreamConnection } from "./stream.ts";
 import { INCOMING_PARAMS_SCHEMA, RESULT_SCHEMA, validate } from "./schemas.ts";
@@ -125,7 +128,10 @@ export interface SubmitOptions {
 }
 
 export interface OpenOptions {
+  /** Omit, with `embodiments`, for an observer session (AWP-EMB-004). */
   embodiment?: string;
+  /** Several embodiments of one `multi_bind_group`, instead of `embodiment` (AWP-EMB-005). */
+  embodiments?: string[];
   subscribe?: (string | SubscribeRequest)[];
   actionTypes?: string[];
   admin?: AdminOperation[];
@@ -155,7 +161,7 @@ function canonical(v: unknown): string {
   return JSON.stringify(v);
 }
 
-/** Per-sender-unique request ids are handled by RpcConnection; action ids are generated here (AWP-AGT-004). */
+/** A fresh, unique action id (AWP-AGT-004). */
 export function newActionId(): string {
   return `a-${randomBytes(8).toString("hex")}`;
 }
@@ -169,7 +175,8 @@ export class AwpClient extends EventEmitter {
   manifest: Manifest | undefined;
   ready: SessionReady | undefined;
   mode: TimeModel | undefined;
-  embodiment: string | undefined;
+  /** Embodiments bound in this session; empty in an observer session (AWP-EMB-004). */
+  embodiments: string[] = [];
 
   /** Current lockstep tick as the agent knows it. */
   tick: number | undefined;
@@ -211,7 +218,6 @@ export class AwpClient extends EventEmitter {
   private closingIntentionally = false;
   private reconnecting = false;
   private lostAt = 0;
-  private lastPingSentAt = 0;
   private originalManifest: string | undefined;
   private streams: StreamConnection[] = [];
   /**
@@ -223,6 +229,10 @@ export class AwpClient extends EventEmitter {
   private sessionConnection: number | undefined;
   /** Lockstep: resolves once the resync keyframes after a resumption arrived (AWP-TIM-009). */
   private resumeObservation: Promise<void> | undefined;
+  private advancing = false;
+  private cmdSeq = new Map<number, number>();
+  private cmdLastSent = new Map<number, number>();
+  private cmdPending = new Map<number, { payload: Uint8Array; fields: Partial<FrameFields>; timer: NodeJS.Timeout }>();
 
   constructor(options: ClientOptions) {
     super();
@@ -264,6 +274,11 @@ export class AwpClient extends EventEmitter {
   /** Whether the agent must regard the embodiment as in safe state (AWP-AGT-007, AWP-SAF-008). */
   get inSafeState(): boolean {
     return this.assumedSafeState || this.worldSafeState;
+  }
+
+  /** The embodiment of a single-bind session; undefined in observer and multi-bind sessions. */
+  get embodiment(): string | undefined {
+    return this.embodiments.length === 1 ? this.embodiments[0] : undefined;
   }
 
   get replayComplete(): boolean {
@@ -329,15 +344,15 @@ export class AwpClient extends EventEmitter {
     return this.latest(name);
   }
 
-  /** The next frame to arrive on a channel. */
-  nextFrame(name: string, timeoutMs: number): Promise<ReceivedFrame> {
+  /** The next frame to arrive on a channel (or on any channel). Rejects with TimeoutError. */
+  nextFrame(name: string | undefined, timeoutMs: number): Promise<ReceivedFrame> {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.off("frame", onFrame);
-        reject(new Error(`no frame on ${name} within ${timeoutMs} ms`));
+        reject(new TimeoutError(`no frame${name ? ` on ${name}` : ""} within ${timeoutMs} ms`, timeoutMs));
       }, Math.max(1, timeoutMs));
       const onFrame = (n: string, _f: Frame, rf: ReceivedFrame) => {
-        if (n !== name) return;
+        if (name !== undefined && n !== name) return;
         clearTimeout(timer);
         this.off("frame", onFrame);
         resolve(rf);
@@ -462,18 +477,14 @@ export class AwpClient extends EventEmitter {
     this.manifest = undefined;
     // No silence-based loss detection before session.ready (AWP-SES-012): wait unless the caller bounds it.
     const { result } = await this.call<WorldManifest>("initialize", this.agentManifest(), timeoutMs);
-    const check = checkManifest(result, SUPPORTED_PROTOCOL_VERSIONS);
-    if (!check.valid) throw new ManifestInvalidError(check.problems);
-    this.manifest = new Manifest(result);
+    this.manifest = new Manifest(assertManifest(result, SUPPORTED_PROTOCOL_VERSIONS));
     return this.manifest;
   }
 
   /** Re-fetches the manifest (`world.manifest`); stable per connection (AWP-MAN-003). */
   async fetchManifest(): Promise<Manifest> {
     const { result } = await this.call<WorldManifest>("world.manifest", {});
-    const check = checkManifest(result, SUPPORTED_PROTOCOL_VERSIONS);
-    if (!check.valid) throw new ManifestInvalidError(check.problems);
-    return new Manifest(result);
+    return new Manifest(assertManifest(result, SUPPORTED_PROTOCOL_VERSIONS));
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -486,21 +497,10 @@ export class AwpClient extends EventEmitter {
     if (this.ready && this.state !== "closed") throw new UsageError("this connection already carries a session (AWP-CTL-007)");
     if (!manifest.timeModels.includes(mode)) throw new UsageError(`the world does not offer ${mode} (offers ${manifest.timeModels.join(", ")})`);
     const params: SessionOpenParams = { mode };
-    if (opts.embodiment !== undefined) {
-      const e = manifest.embodiment(opts.embodiment);
-      if (!e) throw new UsageError(`embodiment ${opts.embodiment} is not declared`);
-      params.embodiment = opts.embodiment;
-    }
-    if (opts.subscribe) {
-      params.subscribe = opts.subscribe.map((s) => (typeof s === "string" ? { channel: s } : s));
-      for (const s of params.subscribe) {
-        const decl = manifest.channel(s.channel);
-        if (!decl) throw new UsageError(`channel ${s.channel} is not declared in the manifest`);
-        if (!this.options.consumesModalities.includes(decl.modality)) {
-          throw new UsageError(`channel ${s.channel} carries ${decl.modality}, which this agent does not consume (AWP-MOD-002)`);
-        }
-      }
-    }
+    const embodiments = this.checkEmbodiments(manifest, opts);
+    if (opts.embodiments) params.embodiments = embodiments;
+    else if (opts.embodiment !== undefined) params.embodiment = opts.embodiment;
+    if (opts.subscribe) params.subscribe = this.subscribeRequests(manifest, opts.subscribe);
     if (opts.actionTypes) params.action_types = opts.actionTypes;
     if (opts.admin) params.admin = opts.admin;
     if (opts.seed !== undefined) params.seed = opts.seed;
@@ -511,7 +511,7 @@ export class AwpClient extends EventEmitter {
     if (opts.seed !== undefined && manifest.raw.capabilities?.seed !== true) throw new UsageError("seed requires the seed capability");
     const { result } = await this.call<SessionReady>("session.open", params, opts.timeoutMs, (r) => {
       this.mode = mode;
-      this.embodiment = opts.embodiment;
+      this.embodiments = embodiments;
       this.originalManifest = canonical(manifest.raw);
       this.lastStatusSeq = 0;
       this.processedAbove.clear();
@@ -521,6 +521,38 @@ export class AwpClient extends EventEmitter {
     });
     if (mode === "streaming") this.syncBurst();
     return result;
+  }
+
+  /** The embodiments `session.open` binds: declared, and several only from one `multi_bind_group` (AWP-EMB-005). */
+  private checkEmbodiments(manifest: Manifest, opts: OpenOptions): string[] {
+    if (opts.embodiment !== undefined && opts.embodiments !== undefined) {
+      throw new UsageError("embodiment and embodiments are mutually exclusive (AWP-EMB-005)");
+    }
+    const ids = opts.embodiments ?? (opts.embodiment !== undefined ? [opts.embodiment] : []);
+    for (const id of ids) if (!manifest.embodiment(id)) throw new UsageError(`embodiment ${id} is not declared`);
+    if (opts.embodiments) {
+      if (ids.length < 2 || new Set(ids).size !== ids.length) {
+        throw new UsageError("embodiments must name two or more distinct embodiments; bind a single one with embodiment");
+      }
+      const groups = new Set(ids.map((id) => manifest.embodiment(id)!.multi_bind_group));
+      if (groups.size !== 1 || groups.has(undefined)) {
+        throw new UsageError(`embodiments ${ids.join(", ")} do not share a multi_bind_group (AWP-EMB-005)`);
+      }
+    }
+    return [...ids];
+  }
+
+  /** Subscription requests for declared channels of consumed modalities only (AWP-AGT-003, AWP-MOD-002). */
+  private subscribeRequests(manifest: Manifest, channels: (string | SubscribeRequest)[]): SubscribeRequest[] {
+    const reqs = channels.map((c) => (typeof c === "string" ? { channel: c } : c));
+    for (const r of reqs) {
+      const decl = manifest.channel(r.channel);
+      if (!decl) throw new UsageError(`channel ${r.channel} is not declared in the manifest`);
+      if (!this.options.consumesModalities.includes(decl.modality)) {
+        throw new UsageError(`channel ${r.channel} carries ${decl.modality}, which this agent does not consume (AWP-MOD-002)`);
+      }
+    }
+    return reqs;
   }
 
   private applyReady(ready: SessionReady, resumed: boolean): void {
@@ -637,20 +669,7 @@ export class AwpClient extends EventEmitter {
   /** Streaming: resolves once a frame has arrived on the named channel (or any channel). */
   waitForFrame(channel?: string, timeoutMs = this.heartbeatIntervalMs * 3): Promise<ReceivedFrame> {
     const have = channel ? this.latest(channel) : [...this.channels.values()].find((c) => c.tracker.latest)?.tracker.latest;
-    if (have) return Promise.resolve(have);
-    return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
-        this.off("frame", onFrame);
-        reject(new Error(`no frame${channel ? ` on ${channel}` : ""} within ${timeoutMs} ms`));
-      }, timeoutMs);
-      const onFrame = (name: string, _f: Frame, rf: ReceivedFrame) => {
-        if (channel && name !== channel) return;
-        clearTimeout(timer);
-        this.off("frame", onFrame);
-        resolve(rf);
-      };
-      this.on("frame", onFrame);
-    });
+    return have ? Promise.resolve(have) : this.nextFrame(channel, timeoutMs);
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -709,7 +728,6 @@ export class AwpClient extends EventEmitter {
     const inSession = this.ready !== undefined && (this.state === "ready" || this.state === "active" || this.state === "closing");
     if (inSession) params.last_status_seq = this.lastStatusSeq;
     const rec: PingRecord = { origin, epoch: inSession ? this.sessionEpoch : -1, connection: conn.connectionId };
-    this.lastPingSentAt = origin;
     const { result, receivedAt } = await this.call<PongResult>("ping", params);
     if (result.origin_ns !== origin) this.warn(`pong echoed origin_ns ${result.origin_ns}, sent ${origin}`);
     const sample = clockSample(origin, result.receive_ns, result.transmit_ns, receivedAt);
@@ -847,13 +865,14 @@ export class AwpClient extends EventEmitter {
    */
   private processSeq(seq: number): boolean {
     if (seq <= this.lastStatusSeq || this.processedAbove.has(seq)) return false;
+    const wasComplete = this.replayComplete;
     if (seq === this.lastStatusSeq + 1) {
       this.lastStatusSeq = seq;
       while (this.processedAbove.delete(this.lastStatusSeq + 1)) this.lastStatusSeq++;
     } else {
       this.processedAbove.add(seq);
     }
-    if (this.replayTo !== undefined && this.lastStatusSeq >= this.replayTo) this.emit("replay_complete");
+    if (!wasComplete && this.replayComplete) this.emit("replay_complete");
     return true;
   }
 
@@ -870,8 +889,6 @@ export class AwpClient extends EventEmitter {
       if (u.state === "executing" && this.submittedAfterResume.has(actionId)) {
         // A new action executes: control regained (AWP-AGT-007, AWP-SAF-008).
         this.assumedSafeState = false;
-      }
-      if (u.state === "executing" && this.worldSafeState && this.submittedAfterResume.has(actionId)) {
         this.worldSafeState = false;
       }
       this.emit("status", rec, u);
@@ -965,6 +982,8 @@ export class AwpClient extends EventEmitter {
     if (verdict.resync) this.emit("resync", ch.grant.channel, frame);
     if (this.state === "ready") this.state = "active";
     if (frame.tick !== undefined) {
+      // Another session's advance moves this session too; it learns of it from the frames (AWP-TIM-012).
+      if (this.mode === "lockstep" && ch.perTick && (this.tick === undefined || frame.tick > this.tick)) this.tick = frame.tick;
       let seen = this.ticksSeen.get(frame.channel_id);
       if (!seen) this.ticksSeen.set(frame.channel_id, (seen = new Set()));
       seen.add(frame.tick);
@@ -1034,9 +1053,8 @@ export class AwpClient extends EventEmitter {
         this.startTimers();
         // Sessionless until the resume result: bounded by the reconnect window, not by silence (AWP-SES-012).
         const left = () => Math.max(1, (windowEnd - this.clock.now()) / 1e6);
-        const { result: m } = await this.call<WorldManifest>("initialize", this.agentManifest(), left());
-        const check = checkManifest(m, SUPPORTED_PROTOCOL_VERSIONS);
-        if (!check.valid) throw new ManifestInvalidError(check.problems);
+        const { result: offered } = await this.call<WorldManifest>("initialize", this.agentManifest(), left());
+        const m = assertManifest(offered, SUPPORTED_PROTOCOL_VERSIONS);
         if (canonical(m) !== this.originalManifest) {
           this.warn("the manifest changed across the reconnection; the world has restarted (AWP-MAN-003)");
         }
@@ -1161,7 +1179,7 @@ export class AwpClient extends EventEmitter {
       try {
         return await fn();
       } catch (err) {
-        if (err instanceof ConnectionLostError && this.ready && !this.isClosed() && this.options.reconnect !== false) {
+        if (err instanceof ConnectionLostError && this.sessionOpen && this.options.reconnect !== false) {
           // The loss may not have been noticed yet; give the close/liveness path a moment.
           lost = true;
           await new Promise((r) => setTimeout(r, 25));
@@ -1175,10 +1193,6 @@ export class AwpClient extends EventEmitter {
   // ---------------------------------------------------------------------------------------------
   // Actions
 
-  private isClosed(): boolean {
-    return this.state === "closed";
-  }
-
   private requireSession(): SessionReady {
     if (!this.ready || this.state === "closed") throw new UsageError("no open session");
     if (this.state === "closing") throw new UsageError("the session is closing");
@@ -1186,11 +1200,15 @@ export class AwpClient extends EventEmitter {
   }
 
   /**
-   * AWP-ERR-001: a submission retries a refused one when its `type`, `params`, and `embodiment_id` are
-   * the same, whatever its `action_id`.
+   * AWP-ERR-001: a submission retries a refused one when its `type`, `params`, and embodiment are the
+   * same, whatever its `action_id`. Throws if such a refusal was non-retryable; returns the key a
+   * refusal of this submission is remembered under.
    */
-  private refusalKey(method: string, params: Record<string, unknown>): string {
-    return `${method}:${canonical({ type: params.type, params: params.params, embodiment_id: params.embodiment_id ?? null })}`;
+  private checkRefusal(sub: ActionSubmitParams): string {
+    const key = canonical({ type: sub.type, params: sub.params, embodiment: sub.embodiment_id ?? this.embodiment ?? null });
+    const prior = this.refused.get(key);
+    if (prior) throw new UsageError(`an identical submission was refused with non-retryable ${prior.errorName}; not retrying (AWP-ERR-001)`);
+    return key;
   }
 
   /**
@@ -1204,15 +1222,17 @@ export class AwpClient extends EventEmitter {
   async submit(type: string, params: Record<string, unknown>, opts: SubmitOptions = {}): Promise<ActionRecord> {
     const ready = this.requireSession();
     const manifest = this.manifest!;
-    if (this.embodiment === undefined) throw new UsageError("observer session: no embodiment is bound, submissions are forbidden (AWP-EMB-004)");
+    if (this.embodiments.length === 0) throw new UsageError("observer session: no embodiment is bound, submissions are forbidden (AWP-EMB-004)");
     if (!ready.granted.action_types.includes(type)) {
       throw new UsageError(`action type ${type} is not granted in this session (AWP-AGT-003, AWP-PRM-001)`);
     }
-    const emb = manifest.embodiment(this.embodiment);
-    if (emb && !emb.action_types.includes(type)) throw new UsageError(`embodiment ${this.embodiment} does not offer ${type}`);
-    if (opts.embodimentId !== undefined && opts.embodimentId !== this.embodiment) {
-      throw new UsageError(`embodiment ${opts.embodimentId} is not bound to this session (AWP-AGT-003)`);
+    if (this.embodiments.length > 1 && opts.embodimentId === undefined) {
+      throw new UsageError("every submission in a multi-bind session names embodimentId (AWP-EMB-005)");
     }
+    const target = opts.embodimentId ?? this.embodiments[0]!;
+    if (!this.embodiments.includes(target)) throw new UsageError(`embodiment ${target} is not bound to this session (AWP-AGT-003)`);
+    const emb = manifest.embodiment(target);
+    if (emb && !emb.action_types.includes(type)) throw new UsageError(`embodiment ${target} does not offer ${type}`);
     const policies = manifest.preemptionPolicies(type);
     if (opts.preempt !== undefined && !policies.includes(opts.preempt)) {
       throw new UsageError(`preempt ${opts.preempt} is not declared for ${type} (declared: ${policies.join(", ")}, AWP-ACT-005)`);
@@ -1234,12 +1254,7 @@ export class AwpClient extends EventEmitter {
       if (!(await this.clockReady())) throw new UsageError("no clock-offset estimate yet; valid_until_ns cannot be expressed (AWP-CLK-008)");
       sub.valid_until_ns = this.estimator.toSession(this.clock.now()) + Math.round(opts.validForMs * 1e6);
     }
-    const key = this.refusalKey("action.submit", sub as unknown as Record<string, unknown>);
-    const prior = this.refused.get(key);
-    if (prior) {
-      throw new UsageError(`an identical submission was refused with non-retryable ${prior.errorName}; not retrying (AWP-ERR-001)`);
-    }
-
+    const key = this.checkRefusal(sub);
     const rec = new ActionRecord(sub);
     return this.sendSubmission(rec, key, opts.basis);
   }
@@ -1251,10 +1266,7 @@ export class AwpClient extends EventEmitter {
   async resubmit(rec: ActionRecord): Promise<ActionRecord> {
     this.requireSession();
     if (!rec.refused) throw new UsageError(`action ${rec.action_id} was not refused; an admitted action_id is never reused (AWP-ACT-010)`);
-    const key = this.refusalKey("action.submit", rec.submission as unknown as Record<string, unknown>);
-    const prior = this.refused.get(key);
-    if (prior) throw new UsageError(`identical submission refused with non-retryable ${prior.errorName}; not retrying (AWP-ERR-001)`);
-    return this.sendSubmission(new ActionRecord(rec.submission), key, undefined);
+    return this.sendSubmission(new ActionRecord(rec.submission), this.checkRefusal(rec.submission), undefined);
   }
 
   private sendSubmission(rec: ActionRecord, key: string, basis: ReceivedFrame | undefined): Promise<ActionRecord> {
@@ -1326,17 +1338,19 @@ export class AwpClient extends EventEmitter {
     this.rebuildChannels(granted, true);
   }
 
-  /** `obs.subscribe`: declared, consumed channels only (AWP-AGT-003, AWP-MOD-002). */
+  /**
+   * `obs.subscribe`: declared, consumed channels (AWP-MOD-002) that a bound embodiment offers
+   * (AWP-AGT-003). In lockstep, resolves once each new per-tick channel delivered the current tick
+   * (AWP-TIM-009).
+   */
   async subscribe(channels: (string | SubscribeRequest)[]): Promise<ChannelGrant[]> {
     this.requireSession();
-    const reqs = channels.map((c) => (typeof c === "string" ? { channel: c } : c));
+    const manifest = this.manifest!;
+    const reqs = this.subscribeRequests(manifest, channels);
+    const offered = new Set(this.embodiments.flatMap((id) => manifest.embodiment(id)?.channels ?? []));
     for (const r of reqs) {
-      const decl = this.manifest!.channel(r.channel);
-      if (!decl) throw new UsageError(`channel ${r.channel} is not declared in the manifest`);
-      if (!this.options.consumesModalities.includes(decl.modality)) throw new UsageError(`channel ${r.channel}: modality ${decl.modality} not consumed`);
-      const emb = this.embodiment ? this.manifest!.embodiment(this.embodiment) : undefined;
-      if (emb && !emb.channels.includes(r.channel) && !this.channel(r.channel)) {
-        throw new UsageError(`channel ${r.channel} is not offered by embodiment ${emb.id} (AWP-AGT-003)`);
+      if (this.embodiments.length > 0 && !offered.has(r.channel) && !this.channel(r.channel)) {
+        throw new UsageError(`channel ${r.channel} is not offered by embodiment ${this.embodiments.join(" or ")} (AWP-AGT-003)`);
       }
     }
     const before = new Set(this.channels.keys());
@@ -1379,7 +1393,7 @@ export class AwpClient extends EventEmitter {
       const timer = setTimeout(() => {
         this.tickWaiters = this.tickWaiters.filter((w) => w !== waiter);
         const missing = [...channels].filter((id) => !this.ticksSeen.get(id)?.has(tick));
-        reject(new ProtocolError("AWP_MALFORMED", `no frame for tick ${tick} on channel(s) ${missing.join(", ")} (AWP-TIM-003)`));
+        reject(new TimeoutError(`no frame for tick ${tick} on channel(s) ${missing.join(", ")} within ${timeoutMs} ms (AWP-TIM-003)`, timeoutMs));
       }, timeoutMs);
       const waiter = {
         tick,
@@ -1399,13 +1413,28 @@ export class AwpClient extends EventEmitter {
    * complete per AWP-TIM-003 — the result is held and every subscribed per-tick channel delivered a
    * frame whose `tick` equals the result's. On AWP_TICK_MISMATCH the known tick is updated from
    * `data.tick` and the error is rethrown (nothing advanced, AWP-TIM-011).
+   *
+   * Under `tick_authority: "barrier"` the world answers only once every other bound lockstep session
+   * has called `world.tick` too, so this waits for them, without a timeout (AWP-TIM-012). One advance
+   * is in flight at a time, and an observer session has no tick authority.
    */
   async advance(count = 1): Promise<number> {
     this.requireSession();
     if (this.mode !== "lockstep") throw new UsageError("world.tick is only valid in lockstep sessions");
+    if (this.embodiments.length === 0) throw new UsageError("an observer session has no tick authority (AWP-TIM-012)");
     if (!Number.isInteger(count) || count < 1) throw new UsageError("count must be an integer ≥ 1");
+    if (this.advancing) throw new UsageError("a world.tick is already in flight; await it before advancing again (AWP-TIM-003)");
     const expected = this.tick;
     if (expected === undefined) throw new UsageError("current tick unknown");
+    this.advancing = true;
+    try {
+      return await this.advanceFrom(expected, count);
+    } finally {
+      this.advancing = false;
+    }
+  }
+
+  private async advanceFrom(expected: number, count: number): Promise<number> {
     for (const s of this.ticksSeen.values()) for (const t of [...s]) if (t > expected) s.delete(t);
     const resumesBefore = this.resumes;
     const params: { expected_tick: number; count?: number } = { expected_tick: expected };
@@ -1514,10 +1543,6 @@ export class AwpClient extends EventEmitter {
 
   // ---------------------------------------------------------------------------------------------
   // Command frames (inline binding)
-
-  private cmdSeq = new Map<number, number>();
-  private cmdLastSent = new Map<number, number>();
-  private cmdPending = new Map<number, { payload: Uint8Array; fields: Partial<FrameFields>; timer: NodeJS.Timeout }>();
 
   /**
    * Sends a command frame inline (`cmd.frame`, AWP-DAT-004) on a command channel whose bound

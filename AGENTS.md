@@ -8,7 +8,7 @@ awp-typescript is an agent SDK for the Agent World Protocol on Node 20+, publish
 npm ci
 npm run typecheck
 npm test
-npm run check-schemas -- --from ../agent-world-protocol
+npm run check-schemas
 ```
 
 CI runs these on Node 20, 22, and 24. It also runs awp-conformance against `awp-demo` in both time models, and fails unless the claim is AWP-conformant.
@@ -32,9 +32,10 @@ CI runs these on Node 20, 22, and 24. It also runs awp-conformance against `awp-
 
 ## Moving to a new draft revision
 
-1. Run `npm run sync-schemas -- --ref spec-v0.1-draft.N`.
-2. Update `SPEC_REVISION` in `src/version.ts`.
-3. Fix whatever the tests report.
+1. Update `SPEC_REVISION` in `src/version.ts`.
+2. Run `npm run sync-schemas`, which vendors the tag `spec-v<SPEC_REVISION>`.
+3. Update the revision named in the README.
+4. Fix whatever the tests report.
 
 ## Releasing
 

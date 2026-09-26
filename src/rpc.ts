@@ -41,7 +41,7 @@ export interface RpcHandlers {
   request(req: IncomingRequest): { result: unknown } | undefined;
   notification(n: IncomingNotification): void;
   /** A 64-bit field exceeded 2^53 − 1 (AWP-CTL-009). */
-  integerRange(detail: string, message: unknown): void;
+  integerRange(detail: string): void;
   /** A message was not valid JSON-RPC; diagnostics only. */
   protocolWarning(detail: string): void;
   /** A binary WebSocket message arrived on the control connection. */
@@ -74,8 +74,6 @@ export class RpcConnection {
   private readonly options: RpcOptions;
   /** Agent clock (ns) of the last message of any kind received from the world. */
   lastReceivedAt: number;
-  /** Agent clock (ns) of the last request or notification this agent originated. */
-  lastOriginatedAt: number;
   closed = false;
 
   constructor(ws: WebSocket, connectionId: number, clock: Clock, handlers: RpcHandlers, options: RpcOptions = {}) {
@@ -85,7 +83,6 @@ export class RpcConnection {
     this.handlers = handlers;
     this.options = options;
     this.lastReceivedAt = clock.now();
-    this.lastOriginatedAt = clock.now();
     ws.on("message", (data: Buffer | ArrayBuffer | Buffer[], isBinary: boolean) => {
       const receivedAt = this.clock.now();
       this.lastReceivedAt = receivedAt;
@@ -155,7 +152,6 @@ export class RpcConnection {
         if (params !== undefined) msg.params = params;
         this.sendRaw(msg);
         p.sentAt = this.clock.now();
-        this.lastOriginatedAt = p.sentAt;
       } catch (err) {
         this.pending.delete(id);
         if (p.timer) clearTimeout(p.timer);
@@ -170,7 +166,6 @@ export class RpcConnection {
     const msg: Record<string, unknown> = { jsonrpc: "2.0", method };
     if (params !== undefined) msg.params = params;
     this.sendRaw(msg);
-    this.lastOriginatedAt = this.clock.now();
   }
 
   private respond(id: RequestId | null, body: { result: unknown } | { error: WireError }): void {
@@ -210,7 +205,7 @@ export class RpcConnection {
           error: { code: 2006, message: "AWP_INTEGER_RANGE", data: { retryable: false, detail } },
         });
       }
-      this.handlers.integerRange(detail, m);
+      this.handlers.integerRange(detail);
       return;
     }
     const hasId = m.id !== undefined && m.id !== null;

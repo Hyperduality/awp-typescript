@@ -11,7 +11,7 @@ import type { ActionState, ActionStatus, ActionSubmitParams } from "./types.ts";
 
 export type StateClass = "transient" | "pre-execution" | "execution" | "terminal";
 
-interface Transition {
+export interface Transition {
   from: string;
   to: string;
   label: string;
@@ -147,15 +147,11 @@ export class ActionRecord {
     let note: string | undefined;
     if (from === u.state) {
       // Progress updates repeat the state (e.g. executing with a new progress value).
-      legal = true;
     } else if (!transition(from, u.state)) {
       const hops = reachable(from, u.state);
+      // Notifications report every transition after admission, so a skip there means a missed status.
       legal = hops !== undefined && u.source !== "status";
       note = hops === undefined ? `illegal transition ${from} → ${u.state} (AWP-LIF-001)` : `transition ${from} → ${u.state} skips intermediate states`;
-      if (u.source === "status" && hops !== undefined) {
-        // Notifications must report every transition after admission; a skip means a missed status.
-        legal = false;
-      }
       this.violations.push(note);
     } else if (!reasonAllowed(from, u.state, u.reason)) {
       note = `reason ${u.reason} not permitted on ${from} → ${u.state}`;

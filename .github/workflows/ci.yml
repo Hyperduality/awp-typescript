@@ -23,12 +23,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npm run build
       - run: npm test
 
   schemas:
     # The vendored schemas, frame vectors, and lifecycle table must equal the specification at the ref
-    # recorded in schemas/source.json (the spec-v<SPEC_REVISION> tag once it exists).
+    # recorded in schemas/source.json.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +60,7 @@ jobs:
       - run: npm ci
       - name: run awp-conformance against the demo agent
         run: |
-          uvx --prerelease allow --from awp-conformance==0.1.0a5 awp-conformance agent \
+          uvx --prerelease allow --from awp-conformance==0.1.0a6 awp-conformance agent \
             --manifest conformance/manifest-${{ matrix.mode }}.json --frames conformance/frames.json \
             --mode ${{ matrix.mode }} --out report -- node dist/demo.js --url '{url}' --token '{token}'
       - name: the claim is AWP-conformant

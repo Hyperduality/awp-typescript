@@ -44,7 +44,7 @@ function project(f: Frame, keys: string[]): Record<string, unknown> {
   return Object.fromEntries(keys.map((k) => [k, all[k]]));
 }
 
-test("the vendored vector file covers every case AWP-DAT-008 lists (0.1-draft.9)", () => {
+test("the vendored vector file covers every case AWP-DAT-008 lists", () => {
   const names = new Set(vectors.map((v) => v.name));
   for (const n of [
     "minimal",

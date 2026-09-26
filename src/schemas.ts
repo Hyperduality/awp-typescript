@@ -174,12 +174,10 @@ export const RESULT_SCHEMA: Readonly<Record<string, string>> = {
   "task.update": "empty-result",
 };
 
-/** Receiver-form schema for each world→agent notification or request, keyed by method. */
+/** Receiver-form schema for each world→agent notification checked against its schema, keyed by method. */
 export const INCOMING_PARAMS_SCHEMA: Readonly<Record<string, string>> = {
-  ping: "ping",
   "action.status": "action-status",
   "world.event": "world-event",
   "session.state": "session-state",
   "session.telemetry": "session-telemetry",
-  "obs.frame": "frame-inline",
 };

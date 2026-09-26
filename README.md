@@ -18,17 +18,17 @@ the canonical JSON Schemas alone — no code or documentation of other AWP imple
 | JSON-RPC 2.0: no batches sent, batches received answered `-32600`, unknown world requests `-32601`, unknown fields ignored, every outgoing message checked against the **sender form** of its schema (`x-awp-closed`, `x-awp-lint`), every incoming one against the **receiver form** | `src/rpc.ts`, `src/schemas.ts` |
 | 64-bit integer bound (2^53 − 1) in JSON (exact, via source text) and in binary frames; a larger value ends the session: `session.close`, then close code 1002 with reason `AWP_INTEGER_RANGE`, never resumed | `src/ints.ts`, `src/client.ts` |
 | `initialize` and manifest validation (canonical schema + AWP-MAN-001 cross references + params schemas compiled against the manifest `$defs`); no session is opened against an invalid manifest | `src/manifest.ts` |
-| `session.open` / `session.ready`, grants enforced locally (never submit ungranted types, undeclared preemption, or schema-invalid params), `obs.subscribe` / `obs.unsubscribe`, `session.close` awaiting the post-`closed` result | `src/client.ts` |
+| `session.open` / `session.ready`, observer and multi-bind sessions, grants enforced locally (never submit ungranted types, undeclared preemption, or schema-invalid params), `obs.subscribe` / `obs.unsubscribe`, `session.close` awaiting the post-`closed` result | `src/client.ts` |
 | Binary frame codec (header, flags, extension TLVs, reserved bits and types) and the inline JSON form; malformed frames dropped, and a stream connection carrying one closed with 1002 `AWP_MALFORMED` and re-established (AWP-DAT-010); all vectors of `schemas/test-vectors/frames.json` | `src/frames.ts`, `src/stream.ts` |
 | Per-channel `seq` accounting: loss by gaps, resync (gap not loss, delta state discarded), late frames from another connection discarded, channels independent | `src/channels.ts` |
 | Action lifecycle from the vendored normative table, `status_seq` dedup, redelivered terminal statuses tolerated, unique `action_id`s, idempotent identical resubmission, non-retryable refusals never retried identically | `src/lifecycle.ts`, `src/client.ts` |
 | Heartbeats (every heartbeat interval and twice per `watchdog_ms` in streaming; at least every 5 s without a session), pongs stamped on one process-wide agent clock, min-RTT-of-eight clock offset, pre-session pongs excluded, loss after three silent intervals only once a session exists, `obs.report` receiver reports | `src/clock.ts`, `src/client.ts` |
-| Lockstep: `world.tick` only as an explicit call; an advance completes when the result **and** a frame for its tick on every per-tick channel are held; `AWP_TICK_MISMATCH` resync; a lockstep-only submit-and-advance helper | `src/client.ts` |
+| Lockstep: `world.tick` only as an explicit call, one at a time; an advance completes when the result **and** a frame for its tick on every per-tick channel are held; the known tick follows other sessions' advances; `AWP_TICK_MISMATCH` resync; a lockstep-only submit-and-advance helper | `src/client.ts` |
 | Reconnection: reconnect, `initialize`, `session.resume` with `last_status_seq`, replay processed through `replay_to_status_seq` before any unacknowledged submission is re-sent identically, lockstep resync keyframes awaited, embodiment treated as in safe state until a new action executes; `AWP_SESSION_UNKNOWN` ends the session for good | `src/client.ts` |
 | Beyond Core: the `ws` stream binding (resync on move, reconnect while the control connection lives), command frames (bound action, rate limit, latest-wins replacement, never inline while the stream that carried them is lost), `task.update`, `world.snapshot` / `restore` / `reset` | `src/stream.ts`, `src/client.ts` |
 
 Not implemented: stream bindings other than `inline` and `ws`, the approver role, `session.transfer`,
-multi-bind sessions, and the `awp.bearer.<token>` subprotocol fallback (Node can set headers).
+and the `awp.bearer.<token>` subprotocol fallback (Node can set headers).
 
 ## Install
 
@@ -48,7 +48,7 @@ npm run typecheck      # tsc --noEmit over src and test
 npm test               # node:test on the compiled tests: unit tests and an in-process scripted world
 npm run test:ts        # the same tests from source (Node ≥ 22.6, type stripping)
 npm run check-schemas  # vendored files == spec repo at the ref recorded in schemas/source.json
-npm run sync-schemas   # re-vendor from ../agent-world-protocol at tag spec-v0.1-draft.9
+npm run sync-schemas   # re-vendor from ../agent-world-protocol at the tag spec-v<SPEC_REVISION>
                        # (or -- --ref <git-ref>, --from <path>)
 ```
 
@@ -57,7 +57,7 @@ npm run sync-schemas   # re-vendor from ../agent-world-protocol at tag spec-v0.1
 converted from `spec/action-lifecycle.yaml`), all read from one git ref of the specification repository.
 CI (`.github/workflows/ci.yml`) runs the typecheck and tests on Node 20, 22 and 24, the schema check, and
 awp-conformance against `awp-demo` in both time models. Pushing a `v*` tag publishes that version to npm
-(`.github/workflows/release.yml`).
+once a maintainer approves it (`.github/workflows/release.yml`).
 
 ## Using the SDK
 
@@ -80,7 +80,19 @@ await rec.settled();                                  // terminal, refused, or l
 await client.close();
 ```
 
-In lockstep, advance explicitly: `while (!rec.terminal) await client.advance(1);`.
+In lockstep, advance explicitly: `while (!rec.terminal) await client.advance(1);`. Under
+`tick_authority: "barrier"` (`manifest.tickAuthority`), `advance` resolves only once every other bound
+lockstep session has called `world.tick` too.
+
+To bind several embodiments of one `multi_bind_group`, pass `embodiments` instead of `embodiment`; each
+submission then names its embodiment:
+
+```ts
+await client.openSession("lockstep", { embodiments: ["arm_01", "gripper_01"], subscribe: ["proprio", "gripper_state"] });
+await client.submit("gripper_move", { width_m: 0.04 }, { embodimentId: "gripper_01" });
+```
+
+A client carries one session; open the next one with a new `AwpClient`.
 
 ## Demo agent
 

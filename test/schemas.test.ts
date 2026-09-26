@@ -108,7 +108,7 @@ test("sender form: closed objects admit x-<vendor>. fields, and x-awp-lint const
   });
 });
 
-test("draft.9 schema changes: channel_id ≥ 1, no negotiating, clamped_count required, session.ready fields required", () => {
+test("receiver schemas: channel_id ≥ 1, no negotiating state, clamped_count required, reserved JSON-RPC errors valid", () => {
   assert.notDeepEqual(validate("subscribe-result", { granted: [{ channel: "a", rate_hz: null, channel_id: 0 }] }, "receiver"), []);
   assert.notDeepEqual(validate("session-state", { state: "negotiating", status_seq: 1, ts_mono_ns: 0 }, "receiver"), []);
   const status = { action_id: "a", state: "executing", status_seq: 1, ts_mono_ns: 0 };

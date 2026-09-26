@@ -140,6 +140,11 @@ export class Manifest {
     return Math.max(0, ...this.raw.action_schemas.map((a) => a.max_abort_ms ?? 0));
   }
 
+  /** Who may advance a lockstep world (AWP-TIM-012); present whenever lockstep is offered. */
+  get tickAuthority(): "any_session" | "barrier" | undefined {
+    return this.raw.tick_authority;
+  }
+
   get watchdogMs(): number | undefined {
     return this.raw.safety_policy.safe_state?.watchdog_ms;
   }

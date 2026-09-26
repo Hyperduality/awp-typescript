@@ -34,12 +34,12 @@ test("the gap before a resync frame is not loss and delta state is discarded (AW
   t.observe(rx(frame(1, 1, { keyframe: true })));
   t.observe(rx(frame(1, 2)));
   t.observe(rx(frame(1, 3)));
-  assert.equal(t.deltaState.length, 2);
+  assert.equal(t.deltaFrames, 2);
   const v = t.observe(rx(frame(1, 40, { keyframe: true, resync: true })));
   assert.deepEqual(v, { kind: "accept", gap: 36, resync: true });
   assert.equal(t.lost, 0);
   assert.equal(t.resyncSkipped, 36);
-  assert.equal(t.deltaState.length, 0);
+  assert.equal(t.deltaFrames, 0);
 });
 
 test("a late frame from another connection is discarded silently (AWP-TRN-012)", () => {
