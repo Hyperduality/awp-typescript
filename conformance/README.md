@@ -1,6 +1,6 @@
 # Conformance evidence
 
-The reports in this directory come from `awp-conformance` 0.1.0a5, which targets `0.1-draft.9`. It was
+The reports in this directory come from `awp-conformance` 0.1.0a6, which targets `0.1-draft.9`. It was
 run against the demo agent (`node dist/demo.js`) in both time models:
 
 ```bash
@@ -16,9 +16,9 @@ awp-conformance agent --manifest conformance/manifest-lockstep.json --frames con
 
 ## Claims (AWP-CNF-005)
 
-- **Core Agent (streaming): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a5)**,
+- **Core Agent (streaming): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a6)**,
   [`report-streaming/report.json`](report-streaming/report.json)
-- **Core Agent (lockstep): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a5)**,
+- **Core Agent (lockstep): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a6)**,
   [`report-lockstep/report.json`](report-lockstep/report.json)
 
 Each claim rests on its report having no failure and nothing untested in scope, plus the evidence below
