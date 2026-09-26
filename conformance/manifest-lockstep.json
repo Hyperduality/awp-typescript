@@ -2,7 +2,7 @@
   "protocol_version": "0.1",
   "world": {
     "name": "awp-sim",
-    "version": "0.1.0a3",
+    "version": "0.1.0a4",
     "vendor": "hyperduality"
   },
   "time_models": [

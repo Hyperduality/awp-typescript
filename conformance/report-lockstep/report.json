@@ -1,15 +1,15 @@
 {
   "suite": {
     "name": "awp-conformance",
-    "version": "0.1.0a3"
+    "version": "0.1.0a4"
   },
   "specification": "0.1-draft.9",
   "target": "node dist/demo.js --url {url} --token {token}",
   "side": "agent",
-  "generated": "2026-09-25T19:36:46Z",
+  "generated": "2026-09-25T23:43:54Z",
   "claim": {
     "status": "conformant",
-    "wording": "Core Agent (lockstep): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a3)",
+    "wording": "Core Agent (lockstep): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a4)",
     "classes": [
       "Core Agent"
     ],

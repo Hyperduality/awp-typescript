@@ -1,6 +1,6 @@
 {
   "name": "@hyperduality/awp",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "TypeScript agent SDK for the Agent World Protocol (AWP), written from the specification (0.1-draft.9).",
   "keywords": [
     "agent-world-protocol",

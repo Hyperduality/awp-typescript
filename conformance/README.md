@@ -1,6 +1,6 @@
 # Conformance evidence
 
-The reports in this directory come from `awp-conformance` 0.1.0a3, which targets `0.1-draft.9`. It was
+The reports in this directory come from `awp-conformance` 0.1.0a4, which targets `0.1-draft.9`. It was
 run against the demo agent (`node dist/demo.js`) in both time models:
 
 ```bash
@@ -16,11 +16,9 @@ awp-conformance agent --manifest conformance/manifest-lockstep.json --frames con
 
 ## Claims (AWP-CNF-005)
 
-These are worded exactly as the reports word them:
-
-- **Core Agent (streaming): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a3)**,
+- **Core Agent (streaming): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a4)**,
   [`report-streaming/report.json`](report-streaming/report.json)
-- **Core Agent (lockstep): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a3)**,
+- **Core Agent (lockstep): AWP-conformant against 0.1-draft.9 (awp-conformance 0.1.0a4)**,
   [`report-lockstep/report.json`](report-lockstep/report.json)
 
 Each claim rests on its report having no failure and nothing untested in scope, plus the evidence below
@@ -94,7 +92,7 @@ through the same `ChannelTracker`.
 
 ### AWP-DAT-010 (agent side "else manual"; both reports test it on a stream connection and pass)
 
-This row needs evidence only when no stream connection is exercised. It is included for completeness:
+This row needs evidence only when no stream connection is exercised:
 
 - `test/client.test.ts`, "ws stream binding …":
   - a version-2 frame on the stream connection is dropped;
