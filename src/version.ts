@@ -1,5 +1,5 @@
 /** The specification draft revision this SDK targets (AWP-VER-009). */
-export const SPEC_REVISION = "0.1-draft.9";
+export const SPEC_REVISION = "0.1-draft.10";
 
 /** The wire protocol version negotiated in `initialize`, as `MAJOR.MINOR` only (AWP-VER-008). */
 export const PROTOCOL_VERSION = "0.1";
