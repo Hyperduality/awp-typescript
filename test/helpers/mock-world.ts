@@ -248,6 +248,24 @@ export function lockstepManifest(): Msg {
   return m;
 }
 
+/** The streaming manifest with a shared gripper in the arm's multi-bind group, and a cart outside it. */
+export function multiBindManifest(): Msg {
+  const m = streamingManifest();
+  m.embodiments[0].multi_bind_group = "cell";
+  m.embodiments.push(
+    { id: "gripper_01", kind: "gripper", shared_control: true, arbitration: "first submission", multi_bind_group: "cell", action_types: ["gripper_move"], channels: ["gripper_state"] },
+    { id: "cart_01", kind: "mobile_base", action_types: ["stop"], channels: ["proprio"] },
+  );
+  m.observation_channels.push({ id: "gripper_state", modality: "proprio/json", rate_hz: 10, loss_class: "latest-wins", schema: {} });
+  m.action_schemas.push({
+    type: "gripper_move",
+    params_schema: { type: "object", properties: { width_m: { type: "number" } }, required: ["width_m"], additionalProperties: false },
+    duration: "extended",
+    preemption: "reject",
+  });
+  return m;
+}
+
 export function sessionReady(extra: Msg = {}): Msg {
   return {
     session_id: "sess_1",

@@ -16,7 +16,7 @@ export const PROTOCOL_ERROR_CLOSE = 1002;
 
 export interface StreamHandlers {
   frame(frame: Frame, receivedAt: number, connection: number): void;
-  /** The stream closed; `reason` is set when this side closed it for a protocol violation. */
+  /** The stream closed; `byUs` when this side closed it intentionally (not for a protocol violation). */
   closed(stream: StreamConnection, code: number, reason: string, byUs: boolean): void;
   integerRange(detail: string): void;
   warning(detail: string): void;
@@ -31,7 +31,6 @@ export class StreamConnection {
   private closedByUs = false;
   private readonly clock: Clock;
   private readonly handlers: StreamHandlers;
-  frames = 0;
 
   constructor(endpoint: StreamEndpoint, connectionId: number, clock: Clock, handlers: StreamHandlers) {
     this.endpoint = endpoint;
@@ -86,7 +85,6 @@ export class StreamConnection {
           }
           return;
         }
-        this.frames++;
         this.handlers.frame(frame, receivedAt, this.connectionId);
       });
       ws.on("close", (code, reason) => {

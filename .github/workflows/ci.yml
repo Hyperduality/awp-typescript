@@ -23,12 +23,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npm run build
       - run: npm test
 
   schemas:
     # The vendored schemas, frame vectors, and lifecycle table must equal the specification at the ref
-    # recorded in schemas/source.json (the spec-v<SPEC_REVISION> tag once it exists).
+    # recorded in schemas/source.json.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

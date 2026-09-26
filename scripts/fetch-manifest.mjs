@@ -2,6 +2,7 @@
 // Fetches a world's manifest over the protocol (the `initialize` result) and writes it as JSON.
 //   node scripts/fetch-manifest.mjs --url ws://127.0.0.1:8710 [--token T] [--out manifest.json]
 import { writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { parseArgs } from "node:util";
 import { AwpClient } from "../dist/index.js";
 
@@ -12,10 +13,11 @@ if (!url) {
   process.exit(2);
 }
 const token = values.token ?? process.env.AWP_TOKEN;
+const { version } = createRequire(import.meta.url)("../package.json");
 const client = new AwpClient({
   url,
   ...(token ? { token } : {}),
-  agent: { name: "awp-typescript-fetch-manifest", version: "0.1.0", vendor: "hyperduality" },
+  agent: { name: "awp-typescript-fetch-manifest", version, vendor: "hyperduality" },
   consumesModalities: ["proprio/json", "text/event+json"],
 });
 const manifest = await client.initialize();

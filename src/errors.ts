@@ -56,6 +56,7 @@ export class AwpError extends Error {
   readonly code: number;
   readonly data: WireError["data"];
   readonly method: string | undefined;
+  private readonly wireMessage: string;
 
   constructor(error: WireError, method?: string) {
     const name = errorName(error.code) ?? error.message;
@@ -64,11 +65,12 @@ export class AwpError extends Error {
     this.code = error.code;
     this.data = error.data;
     this.method = method;
+    this.wireMessage = error.message;
   }
 
   /** Registry name, e.g. `AWP_BUSY`, or the JSON-RPC message for reserved codes. */
   get errorName(): string {
-    return errorName(this.code) ?? this.message;
+    return errorName(this.code) ?? this.wireMessage;
   }
 
   /**
@@ -137,11 +139,21 @@ export class SessionClosedError extends Error {
   }
 }
 
-/** No response arrived within the caller's deadline (the connection may still be open). */
-export class RequestTimeoutError extends Error {
+/** Something awaited did not happen within its deadline (the connection may still be open). */
+export class TimeoutError extends Error {
+  readonly timeoutMs: number;
+  constructor(message: string, timeoutMs: number) {
+    super(message);
+    this.name = "TimeoutError";
+    this.timeoutMs = timeoutMs;
+  }
+}
+
+/** No response arrived within the caller's deadline. */
+export class RequestTimeoutError extends TimeoutError {
   readonly method: string;
   constructor(method: string, timeoutMs: number) {
-    super(`${method} got no response within ${timeoutMs} ms`);
+    super(`${method} got no response within ${timeoutMs} ms`, timeoutMs);
     this.name = "RequestTimeoutError";
     this.method = method;
   }

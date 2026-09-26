@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { AwpClient, type ClientOptions } from "../src/client.ts";
-import { AwpError, ManifestInvalidError, UsageError } from "../src/errors.ts";
+import { AwpClient, type ClientOptions, type OpenOptions } from "../src/client.ts";
+import { AwpError, ManifestInvalidError, TimeoutError, UsageError } from "../src/errors.ts";
 import { validate } from "../src/schemas.ts";
-import { MockWorld, type MockConn, type Msg, streamingManifest, lockstepManifest, sessionReady, pose, b64 } from "./helpers/mock-world.ts";
+import { MockWorld, type MockConn, type Msg, streamingManifest, lockstepManifest, multiBindManifest, sessionReady, pose, b64 } from "./helpers/mock-world.ts";
 
 function client(world: MockWorld, extra: Partial<ClientOptions> = {}): AwpClient {
   return new AwpClient({
@@ -17,7 +17,7 @@ function client(world: MockWorld, extra: Partial<ClientOptions> = {}): AwpClient
 }
 
 /** Connect, initialize, and open a session against the mock world; returns the world side. */
-async function open(world: MockWorld, c: AwpClient, opts: { manifest?: Msg; ready?: Msg; mode?: "streaming" | "lockstep" } = {}): Promise<MockConn> {
+async function open(world: MockWorld, c: AwpClient, opts: { manifest?: Msg; ready?: Msg; mode?: "streaming" | "lockstep"; open?: OpenOptions } = {}): Promise<MockConn> {
   const accepted = world.accept();
   const init = c.initialize();
   const conn = await accepted;
@@ -25,7 +25,7 @@ async function open(world: MockWorld, c: AwpClient, opts: { manifest?: Msg; read
   conn.result(i.id, opts.manifest ?? streamingManifest());
   await init;
   const mode = opts.mode ?? "streaming";
-  const opening = c.openSession(mode, { embodiment: "arm_01", subscribe: ["proprio", "arm_state"] });
+  const opening = c.openSession(mode, opts.open ?? { embodiment: "arm_01", subscribe: ["proprio", "arm_state"] });
   const o = await conn.next("session.open");
   conn.result(o.id, opts.ready ?? sessionReady(mode === "lockstep" ? { tick: 0, granted: { ...sessionReady().granted, channels: [{ channel: "proprio", rate_hz: null, channel_id: 1 }, { channel: "arm_state", rate_hz: null, channel_id: 2 }] } } : {}));
   conn.notify("session.state", { state: "ready", status_seq: 1, ts_mono_ns: 0, reason: "opened" });
@@ -556,12 +556,163 @@ test("lockstep: initial observations, advance completes only with result and per
     conn.notify("obs.frame", frame(2, 2, { tick: 1, ts_send_ns: undefined }));
     assert.equal(await adv, 1);
     assert.equal(c.tick, 1);
-    // A mismatch updates the known tick and nothing is retried.
+    c.disconnect();
+  }));
+
+test("AWP_TICK_MISMATCH updates the known tick and nothing is retried (AWP-TIM-011)", () =>
+  withWorld(async (world) => {
+    const c = client(world);
+    const conn = await open(world, c, { manifest: lockstepManifest(), mode: "lockstep" });
     const bad = c.advance(1);
-    const t2 = await conn.next("world.tick");
-    conn.error(t2.id, 3009, "AWP_TICK_MISMATCH", false, { tick: 4 });
+    const t = await conn.next("world.tick");
+    conn.error(t.id, 3009, "AWP_TICK_MISMATCH", false, { tick: 4 });
     await assert.rejects(bad, AwpError);
     assert.equal(c.tick, 4);
+    await sleep(30);
+    assert.equal(conn.all("world.tick").length, 1);
+    c.disconnect();
+  }));
+
+const lockstepFrame = (channel_id: number, seq: number, tick: number) => frame(channel_id, seq, { tick, ts_send_ns: undefined });
+
+test("lockstep: an advance by another session moves the known tick through its frames (AWP-TIM-012, AWP-TIM-003)", () =>
+  withWorld(async (world) => {
+    const c = client(world);
+    const conn = await open(world, c, { manifest: lockstepManifest(), mode: "lockstep" });
+    conn.notify("obs.frame", lockstepFrame(1, 1, 0));
+    conn.notify("obs.frame", lockstepFrame(2, 1, 0));
+    await c.initialObservations();
+    for (let tick = 1; tick <= 2; tick++) {
+      conn.notify("obs.frame", lockstepFrame(1, 1 + tick, tick));
+      conn.notify("obs.frame", lockstepFrame(2, 1 + tick, tick));
+    }
+    await sleep(50);
+    assert.equal(c.tick, 2);
+    const adv = c.advance(1);
+    const t = await conn.next("world.tick");
+    assert.deepEqual(t.params, { expected_tick: 2 });
+    conn.notify("obs.frame", lockstepFrame(1, 4, 3));
+    conn.notify("obs.frame", lockstepFrame(2, 4, 3));
+    conn.result(t.id, { tick: 3 });
+    assert.equal(await adv, 3);
+    c.disconnect();
+  }));
+
+test("one world.tick is in flight at a time, and an observer session has no tick authority (AWP-TIM-003, AWP-TIM-012)", () =>
+  withWorld(async (world) => {
+    const c = client(world);
+    const conn = await open(world, c, { manifest: lockstepManifest(), mode: "lockstep" });
+    // Under a barrier the result waits for the other sessions; a second call meanwhile is refused locally.
+    const adv = c.advance(1);
+    const t = await conn.next("world.tick");
+    await assert.rejects(c.advance(1), UsageError);
+    conn.notify("obs.frame", lockstepFrame(1, 1, 1));
+    conn.notify("obs.frame", lockstepFrame(2, 1, 1));
+    conn.result(t.id, { tick: 1 });
+    assert.equal(await adv, 1);
+    assert.equal(conn.all("world.tick").length, 1);
+    c.disconnect();
+
+    const observer = client(world);
+    const oconn = await open(world, observer, { manifest: lockstepManifest(), mode: "lockstep", open: { subscribe: ["proprio"] } });
+    assert.equal(oconn.all("session.open")[0]!.params.embodiment, undefined);
+    await assert.rejects(observer.advance(1), UsageError);
+    await assert.rejects(observer.submit("stop", {}), UsageError);
+    assert.equal(oconn.all("world.tick").length + oconn.all("action.submit").length, 0);
+    observer.disconnect();
+  }));
+
+test("obs.subscribe and obs.unsubscribe replace the grant list; in lockstep a new channel first delivers the current tick (AWP-AGT-003, AWP-TIM-009)", () =>
+  withWorld(async (world) => {
+    const c = client(world);
+    const ready = sessionReady({ tick: 5, granted: { ...sessionReady().granted, channels: [{ channel: "proprio", rate_hz: null, channel_id: 1 }] } });
+    const conn = await open(world, c, { manifest: lockstepManifest(), mode: "lockstep", ready, open: { embodiment: "arm_01", subscribe: ["proprio"] } });
+    await assert.rejects(c.subscribe(["nonexistent"]), UsageError);
+    const subscribing = c.subscribe(["arm_state"]);
+    const sub = await conn.next("obs.subscribe");
+    assert.deepEqual(sub.params, { channels: [{ channel: "arm_state" }] });
+    conn.result(sub.id, { granted: [{ channel: "proprio", rate_hz: null, channel_id: 1 }, { channel: "arm_state", rate_hz: null, channel_id: 2 }] });
+    let done = false;
+    void subscribing.then(() => (done = true));
+    await sleep(50);
+    assert.equal(done, false, "the new per-tick channel has not delivered tick 5 yet");
+    conn.notify("obs.frame", lockstepFrame(2, 1, 5));
+    assert.equal((await subscribing).length, 2);
+    assert.equal(c.channel("arm_state")?.grant.channel_id, 2);
+
+    const unsubscribing = c.unsubscribe(["arm_state"]);
+    const un = await conn.next("obs.unsubscribe");
+    assert.deepEqual(un.params, { channels: ["arm_state"] });
+    conn.result(un.id, { granted: [{ channel: "proprio", rate_hz: null, channel_id: 1 }] });
+    await unsubscribing;
+    assert.equal(c.channel("arm_state"), undefined);
+    c.disconnect();
+  }));
+
+test("world.snapshot, world.restore, and world.reset need their capability and admin grant; the restored tick is observed (AWP-PRM-005, AWP-PRM-006)", () =>
+  withWorld(async (world) => {
+    const manifest = lockstepManifest();
+    manifest.capabilities = { snapshot: true };
+    const granted = { ...sessionReady().granted, channels: [{ channel: "proprio", rate_hz: null, channel_id: 1 }], admin: ["snapshot", "restore"] };
+    const c = client(world);
+    const conn = await open(world, c, { manifest, mode: "lockstep", ready: sessionReady({ tick: 7, granted }), open: { embodiment: "arm_01", subscribe: ["proprio"], admin: ["snapshot", "restore"] } });
+    await assert.rejects(c.reset(), UsageError, "reset is not granted");
+
+    const snap = c.snapshot();
+    const s = await conn.next("world.snapshot");
+    conn.result(s.id, { snapshot_token: "snap_0123456789" });
+    assert.equal(await snap, "snap_0123456789");
+
+    const restoring = c.restore("snap_0123456789");
+    const r = await conn.next("world.restore");
+    assert.deepEqual(r.params, { snapshot_token: "snap_0123456789" });
+    conn.result(r.id, { tick: 3 });
+    conn.notify("obs.frame", lockstepFrame(1, 1, 3));
+    assert.equal(await restoring, 3);
+    assert.equal(c.tick, 3);
+    assert.equal(conn.all("world.reset").length, 0);
+    c.disconnect();
+  }));
+
+test("multi-bind: session.open names embodiments of one multi_bind_group, and every submission names its embodiment (AWP-EMB-005)", () =>
+  withWorld(async (world) => {
+    const c = client(world);
+    const accepted = world.accept();
+    const init = c.initialize();
+    const conn = await accepted;
+    conn.result((await conn.next("initialize")).id, multiBindManifest());
+    await init;
+    await assert.rejects(c.openSession("streaming", { embodiment: "arm_01", embodiments: ["arm_01", "gripper_01"] }), UsageError, "exclusive");
+    await assert.rejects(c.openSession("streaming", { embodiments: ["arm_01", "cart_01"] }), UsageError, "different groups");
+    await assert.rejects(c.openSession("streaming", { embodiments: ["arm_01"] }), UsageError, "one embodiment");
+    assert.equal(conn.all("session.open").length, 0);
+
+    const opening = c.openSession("streaming", { embodiments: ["arm_01", "gripper_01"], subscribe: ["proprio"] });
+    const o = await conn.next("session.open");
+    assert.deepEqual(o.params.embodiments, ["arm_01", "gripper_01"]);
+    assert.equal(o.params.embodiment, undefined);
+    const granted = { ...sessionReady().granted, channels: [{ channel: "proprio", rate_hz: 100, channel_id: 1 }], action_types: ["move_to_pose", "stop", "gripper_move"] };
+    conn.result(o.id, sessionReady({ granted }));
+    await opening;
+    assert.deepEqual(c.embodiments, ["arm_01", "gripper_01"]);
+    assert.equal(c.embodiment, undefined);
+
+    await assert.rejects(c.submit("gripper_move", { width_m: 0.04 }), UsageError, "no embodimentId");
+    await assert.rejects(c.submit("move_to_pose", pose(0.1), { embodimentId: "gripper_01" }), UsageError, "not offered there");
+    await assert.rejects(c.submit("stop", {}, { embodimentId: "cart_01" }), UsageError, "not bound");
+    assert.equal(conn.all("action.submit").length, 0);
+
+    const p = c.submit("gripper_move", { width_m: 0.04 }, { embodimentId: "gripper_01" });
+    const sub = await conn.next("action.submit");
+    assert.equal(sub.params.embodiment_id, "gripper_01");
+    conn.result(sub.id, { action_id: sub.params.action_id, state: "accepted", status_seq: 1, received_ts_mono_ns: 1, ts_mono_ns: 1 });
+    assert.equal((await p).state, "accepted");
+
+    // Channels of every bound embodiment may be subscribed.
+    const subscribing = c.subscribe(["gripper_state"]);
+    const s = await conn.next("obs.subscribe");
+    conn.result(s.id, { granted: [...granted.channels, { channel: "gripper_state", rate_hz: 10, channel_id: 3 }] });
+    await subscribing;
     c.disconnect();
   }));
 

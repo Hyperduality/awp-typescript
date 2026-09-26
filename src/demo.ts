@@ -17,6 +17,7 @@
  * Exit codes: 0 done; 1 unexpected error; 2 could not connect; 3 invalid manifest or no common
  * protocol version (no session was opened); 4 the session ended early (world silent, window expired).
  */
+import { createRequire } from "node:module";
 import { parseArgs } from "node:util";
 import { AwpClient, type LogLevel } from "./client.ts";
 import { AwpError, ConnectionLostError, ErrorCode, ManifestInvalidError, RequestTimeoutError, SessionClosedError, UsageError } from "./errors.ts";
@@ -26,6 +27,7 @@ import type { PreemptionPolicy, TimeModel } from "./types.ts";
 import { SPEC_REVISION } from "./version.ts";
 
 const CONSUMES = ["proprio/json", "text/event+json"];
+const { version } = createRequire(import.meta.url)("../package.json") as { version: string };
 
 interface Args {
   url: string;
@@ -77,8 +79,6 @@ function log(level: LogLevel, msg: string): void {
   if (level === "debug" && !verbose) return;
   process.stderr.write(`[awp-demo +${((Date.now() - started) / 1000).toFixed(3)}s] ${level === "info" ? "" : `${level}: `}${msg}\n`);
 }
-
-class SessionEnded extends Error {}
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -137,12 +137,11 @@ async function runOnce(args: Args, progress: Progress): Promise<number | "sessio
   const client = new AwpClient({
     url: args.url,
     ...(args.token !== undefined ? { token: args.token } : {}),
-    agent: { name: "awp-typescript-demo", version: "0.1.0", vendor: "hyperduality" },
+    agent: { name: "awp-typescript-demo", version, vendor: "hyperduality" },
     consumesModalities: CONSUMES,
     logger: log,
     ...(args.trace ? { trace: (dir: "out" | "in", m: unknown) => log("debug", `${dir === "out" ? "→" : "←"} ${JSON.stringify(m)}`) } : {}),
   });
-  client.on("warning", () => undefined); // logged by the logger
   client.on("suspended", (reason: string) => log("info", `connection lost (${reason}); reconnecting`));
   client.on("resumed", () => log("info", `resumed; embodiment treated as in safe state until a new action executes`));
   client.on("event", (e: { event: string }) => log("info", `world.event ${e.event}`));
@@ -208,7 +207,7 @@ async function runOnce(args: Args, progress: Progress): Promise<number | "sessio
   try {
     await runSession(client, manifest, emb.id, mode, args.paceMs, progress);
   } catch (err) {
-    if (err instanceof SessionEnded || err instanceof SessionClosedError || client.state === "closed") return ended();
+    if (err instanceof SessionClosedError || client.state === "closed") return ended();
     log("error", `unexpected error: ${(err as Error).stack ?? String(err)}`);
     try {
       await client.close();
@@ -234,7 +233,7 @@ async function runSession(
   progress: Progress,
 ): Promise<void> {
   const ensureOpen = () => {
-    if (client.state === "closed") throw new SessionEnded(client.closeReason ?? "closed");
+    if (client.state === "closed") throw new SessionClosedError(client.closeReason ?? "closed");
   };
   /** One lockstep decision: think for paceMs, then advance (the only way time moves, AWP-AGT-009). */
   const step = async () => {
@@ -263,11 +262,8 @@ async function runSession(
   if (!granted.includes("move_to_pose")) {
     // AWP-AGT-003: never submit an ungranted type. Observe briefly, then close.
     log("info", "move_to_pose is not granted in this session; observing only");
-    if (mode === "lockstep") {
-      // Nothing to do; time only moves when told to, and no action is pending.
-    } else {
-      await sleep(500);
-    }
+    // In lockstep nothing happens until the agent advances, and it has nothing to wait for.
+    if (mode === "streaming") await sleep(500);
     return;
   }
 

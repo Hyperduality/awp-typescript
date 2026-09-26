@@ -47,7 +47,7 @@ The tests named below are in `test/` and run with `npm test`. Each shows the pro
   - "vector <name> decodes to its listed fields" and "… round-trips through the encoder and the inline form";
   - "vector <name> re-encodes byte for byte";
   - "vector <name> is rejected with <error>";
-  - "the vendored vector file covers every case AWP-DAT-008 lists (0.1-draft.9)".
+  - "the vendored vector file covers every case AWP-DAT-008 lists".
 
 ### AWP-DAT-001: loss by `seq` gap, agent side (lockstep)
 
@@ -72,7 +72,7 @@ through the same `ChannelTracker`.
   (AWP-DAT-009)":
   - after two delta frames, a resync keyframe at seq 40 reports a gap of 36 with `lost = 0` and
     `resyncSkipped = 36`;
-  - the accumulated delta state is emptied.
+  - the count of delta frames since the last keyframe returns to 0.
 - `test/client.test.ts`, "lockstep resumption: resync keyframes with the current tick complete an advance
   whose frames were lost (AWP-TIM-009)":
   - in a lockstep session, the resync keyframes sent after `session.resume` skip the lost `seq` values
@@ -89,26 +89,3 @@ through the same `ChannelTracker`.
 - `SPEC_REVISION = "0.1-draft.9"` in `src/version.ts`, asserted by `test/schemas.test.ts`, "SPEC_REVISION
   names the targeted draft (AWP-VER-009)".
 - The README names the revision, and so does each report (`"specification": "0.1-draft.9"`).
-
-### AWP-DAT-010 (agent side "else manual"; both reports test it on a stream connection and pass)
-
-This row needs evidence only when no stream connection is exercised:
-
-- `test/client.test.ts`, "ws stream binding …":
-  - a version-2 frame on the stream connection is dropped;
-  - the connection is closed with WebSocket close code 1002 and reason `AWP_MALFORMED`, then re-established;
-  - a text message is treated the same way.
-- `test/client.test.ts`, "malformed inline frames are dropped, not processed (AWP-DAT-010)": resync without
-  keyframe, bad base64, and a missing `seq` are each dropped without closing the control connection.
-- `test/frames.test.ts`: "inline frames with resync but no keyframe are malformed (AWP-DAT-010)",
-  "trailing bytes after the payload are malformed", "a frame version other than 1 is malformed", and
-  "reserved extension types 0x00 and 0x04–0x7F are skipped".
-
-### AWP-DAT-002: latest-wins drop policy (streaming; `n/a` in these reports)
-
-The reports mark this row `n/a` because the demo sends no command frames. The SDK's sender does hold at
-most one undelivered frame on a `latest-wins` command channel and replaces it rather than queueing it. See
-`sendCommandFrame` in `src/client.ts` and `test/client.test.ts`, "command frames: only while the bound
-streaming action executes, within the rate, latest-wins replaces (AWP-CMD-003, AWP-DAT-002/003)": of
-three frames produced faster than the rate, the second is held and then replaced by the third, and only
-the first and third are sent.

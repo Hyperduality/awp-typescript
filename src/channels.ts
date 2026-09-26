@@ -48,8 +48,8 @@ export class ChannelTracker {
   violations = 0;
   /** Latest accepted frame. */
   latest: ReceivedFrame | undefined;
-  /** Delta state accumulated since the last keyframe; cleared on resync (AWP-DAT-009). */
-  deltaState: unknown[] = [];
+  /** Delta frames accepted since the last keyframe; delta state is discarded on resync (AWP-DAT-009). */
+  deltaFrames = 0;
 
   // Receiver-report window (AWP-OBS-007).
   private windowFrames = 0;
@@ -83,14 +83,12 @@ export class ChannelTracker {
     if (frame.resync) {
       this.resyncs++;
       this.resyncSkipped += gap;
-      this.deltaState = [];
       this.prevTransit = undefined;
     } else {
       this.lost += gap;
       this.windowGaps += gap;
     }
-    if (frame.keyframe) this.deltaState = [];
-    else this.deltaState.push(frame);
+    this.deltaFrames = frame.keyframe ? 0 : this.deltaFrames + 1;
     this.lastSeq = frame.seq;
     this.lastConnection = rf.connection;
     this.received++;
