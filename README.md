@@ -4,9 +4,9 @@ An independent, clean-room implementation of the **agent side** of the
 [Agent World Protocol](https://agentworldprotocol.com) (AWP), written from the specification text and
 the canonical JSON Schemas alone — no code or documentation of other AWP implementations was used.
 
-- **Specification revision:** `0.1-draft.9`; wire protocol version `"0.1"`. Both are exported as
+- **Specification revision:** `0.1-draft.10`; wire protocol version `"0.1"`. Both are exported as
   `SPEC_REVISION` and `PROTOCOL_VERSION`. The vendored artifacts come from the ref recorded in
-  [`schemas/source.json`](schemas/source.json): the tag `spec-v0.1-draft.9`.
+  [`schemas/source.json`](schemas/source.json): the tag `spec-v0.1-draft.10`.
 - **Target:** the Core Agent conformance class (AWP-CNF-002) in both time models, streaming and lockstep.
 - Node ≥ 20, TypeScript, ESM; `ws` for WebSockets, `ajv` (JSON Schema 2020-12) for validation.
 
