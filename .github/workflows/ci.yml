@@ -61,7 +61,7 @@ jobs:
       - run: npm ci
       - name: run awp-conformance against the demo agent
         run: |
-          uvx --prerelease allow --from awp-conformance==0.1.0a4 awp-conformance agent \
+          uvx --prerelease allow --from awp-conformance==0.1.0a5 awp-conformance agent \
             --manifest conformance/manifest-${{ matrix.mode }}.json --frames conformance/frames.json \
             --mode ${{ matrix.mode }} --out report -- node dist/demo.js --url '{url}' --token '{token}'
       - name: the claim is AWP-conformant
