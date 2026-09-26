@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-alpha.4
+
+Targets specification revision `0.1-draft.10`. The API is unchanged; the reports come from awp-conformance 0.1.0a7.
+
 ## 0.1.0-alpha.3
 
 Targets specification revision `0.1-draft.9`.
