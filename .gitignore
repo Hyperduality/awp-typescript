@@ -5,3 +5,4 @@ awp-audit/
 *.log
 /scratch/
 dist-test/
+.DS_Store
