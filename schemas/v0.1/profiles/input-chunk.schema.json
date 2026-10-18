@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentworldprotocol.com/schemas/v0.1/profiles/input-chunk.schema.json",
+  "title": "Game profile input_chunk params (AWP-GAM-001)",
+  "description": "Normative params_schema for the reserved action type input_chunk: device state for keyboard, mouse, and gamepad in fixed-length slots. +x is right and +y is down. Mouse and scroll deltas are device counts, a documented exception to AWP-UNI-001.",
+  "type": "object",
+  "properties": {
+    "slot_ms": { "type": "integer", "minimum": 1, "maximum": 1000, "description": "Length of every slot, in milliseconds." },
+    "slots": {
+      "type": "array", "minItems": 1, "maxItems": 256,
+      "description": "Device states in execution order; each holds for slot_ms.",
+      "items": {
+        "type": "object",
+        "properties": {
+        "keys": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/key_name" }, "description": "Keys and buttons held down for the slot; any key not listed is up." },
+        "mouse_dx": { "type": "integer", "minimum": -32768, "maximum": 32767, "description": "Horizontal mouse motion over the slot, in device counts; positive is right." },
+        "mouse_dy": { "type": "integer", "minimum": -32768, "maximum": 32767, "description": "Vertical mouse motion over the slot, in device counts; positive is down." },
+        "scroll_steps": { "type": "integer", "minimum": -127, "maximum": 127, "description": "Wheel detents over the slot; positive moves the wheel away from the user." },
+        "sticks": {
+            "type": "object",
+            "description": "Analog stick deflection held for the slot; an absent axis is centered.",
+            "properties": {
+              "left_x":  { "type": "number", "minimum": -1, "maximum": 1, "description": "Left stick, horizontal, unitless; positive is right." },
+              "left_y":  { "type": "number", "minimum": -1, "maximum": 1, "description": "Left stick, vertical, unitless; positive is down." },
+              "right_x": { "type": "number", "minimum": -1, "maximum": 1, "description": "Right stick, horizontal, unitless; positive is right." },
+              "right_y": { "type": "number", "minimum": -1, "maximum": 1, "description": "Right stick, vertical, unitless; positive is down." }
+            },
+            "x-awp-closed": true
+          },
+        "triggers": {
+            "type": "object",
+            "description": "Analog trigger pull held for the slot (standard-mapping buttons 6 and 7); an absent trigger is released.",
+            "properties": {
+              "left":  { "type": "number", "minimum": 0, "maximum": 1, "description": "Left trigger, unitless; 0 is released, 1 fully pulled." },
+              "right": { "type": "number", "minimum": 0, "maximum": 1, "description": "Right trigger, unitless; 0 is released, 1 fully pulled." }
+            },
+            "x-awp-closed": true
+          }
+        },
+        "x-awp-closed": true
+      }
+    }
+  },
+  "required": ["slot_ms", "slots"],
+  "x-awp-closed": true,
+  "$defs": {
+    "key_name": {
+      "description": "A W3C UI Events KeyboardEvent.code value other than Unidentified, a mouse button, or a button of the W3C Gamepad standard mapping named by position.",
+      "enum": [
+        "Backquote", "Backslash", "BracketLeft", "BracketRight", "Comma", "Digit0", "Digit1", "Digit2", "Digit3",
+        "Digit4", "Digit5", "Digit6", "Digit7", "Digit8", "Digit9", "Equal", "IntlBackslash", "IntlRo", "IntlYen",
+        "KeyA", "KeyB", "KeyC", "KeyD", "KeyE", "KeyF", "KeyG", "KeyH", "KeyI", "KeyJ", "KeyK", "KeyL", "KeyM",
+        "KeyN", "KeyO", "KeyP", "KeyQ", "KeyR", "KeyS", "KeyT", "KeyU", "KeyV", "KeyW", "KeyX", "KeyY", "KeyZ",
+        "Minus", "Period", "Quote", "Semicolon", "Slash", "AltLeft", "AltRight", "Backspace", "CapsLock",
+        "ContextMenu", "ControlLeft", "ControlRight", "Enter", "MetaLeft", "MetaRight", "ShiftLeft", "ShiftRight",
+        "Space", "Tab", "Convert", "KanaMode", "Lang1", "Lang2", "Lang3", "Lang4", "Lang5", "NonConvert", "Delete",
+        "End", "Help", "Home", "Insert", "PageDown", "PageUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp",
+        "NumLock", "Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5", "Numpad6", "Numpad7", "Numpad8",
+        "Numpad9", "NumpadAdd", "NumpadBackspace", "NumpadClear", "NumpadClearEntry", "NumpadComma", "NumpadDecimal",
+        "NumpadDivide", "NumpadEnter", "NumpadEqual", "NumpadHash", "NumpadMemoryAdd", "NumpadMemoryClear",
+        "NumpadMemoryRecall", "NumpadMemoryStore", "NumpadMemorySubtract", "NumpadMultiply", "NumpadParenLeft",
+        "NumpadParenRight", "NumpadStar", "NumpadSubtract", "Escape", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
+        "F9", "F10", "F11", "F12", "Fn", "FnLock", "PrintScreen", "ScrollLock", "Pause", "BrowserBack",
+        "BrowserFavorites", "BrowserForward", "BrowserHome", "BrowserRefresh", "BrowserSearch", "BrowserStop",
+        "Eject", "LaunchApp1", "LaunchApp2", "LaunchMail", "MediaPlayPause", "MediaSelect", "MediaStop",
+        "MediaTrackNext", "MediaTrackPrevious", "Power", "Sleep", "AudioVolumeDown", "AudioVolumeMute",
+        "AudioVolumeUp", "WakeUp", "Hyper", "Super", "Turbo", "Abort", "Resume", "Suspend", "Again", "Copy", "Cut",
+        "Find", "Open", "Paste", "Props", "Select", "Undo", "Hiragana", "Katakana", "MouseLeft", "MouseRight",
+        "MouseMiddle", "MouseBack", "MouseForward", "GamepadSouth", "GamepadEast", "GamepadWest", "GamepadNorth",
+        "GamepadLeftBumper", "GamepadRightBumper", "GamepadSelect", "GamepadStart", "GamepadLeftStick",
+        "GamepadRightStick", "GamepadDpadUp", "GamepadDpadDown", "GamepadDpadLeft", "GamepadDpadRight",
+        "GamepadHome"
+      ]
+    }
+  }
+}
