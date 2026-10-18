@@ -1,15 +1,15 @@
 {
   "suite": {
     "name": "awp-conformance",
-    "version": "0.1.0a7"
+    "version": "0.1.0a9"
   },
-  "specification": "0.1-draft.10",
+  "specification": "0.1-draft.11",
   "target": "node dist/demo.js --url {url} --token {token}",
   "side": "agent",
-  "generated": "2026-09-26T22:32:27Z",
+  "generated": "2026-10-18T20:44:56Z",
   "claim": {
     "status": "conformant",
-    "wording": "Core Agent (streaming): AWP-conformant against 0.1-draft.10 (awp-conformance 0.1.0a7)",
+    "wording": "Core Agent (streaming): AWP-conformant against 0.1-draft.11 (awp-conformance 0.1.0a9)",
     "classes": [
       "Core Agent"
     ],
@@ -24,7 +24,7 @@
     ],
     "counts": {
       "manual": 2,
-      "n/a": 191,
+      "n/a": 195,
       "pass": 45,
       "untestable": 3
     }
@@ -106,7 +106,7 @@
       "id": "AWP-AGT-001",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "183 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+      "detail": "185 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
     },
     {
       "id": "AWP-AGT-002",
@@ -286,7 +286,7 @@
       "id": "AWP-CLK-006",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "91 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+      "detail": "92 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
     },
     {
       "id": "AWP-CLK-007",
@@ -400,7 +400,7 @@
       "id": "AWP-CTL-001",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "193 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+      "detail": "195 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
     },
     {
       "id": "AWP-CTL-002",
@@ -418,7 +418,7 @@
       "id": "AWP-CTL-004",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "91 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+      "detail": "92 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
     },
     {
       "id": "AWP-CTL-005",
@@ -430,7 +430,7 @@
       "id": "AWP-CTL-006",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "193 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+      "detail": "195 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
     },
     {
       "id": "AWP-CTL-007",
@@ -448,7 +448,7 @@
       "id": "AWP-CTL-009",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "195 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+      "detail": "197 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
     },
     {
       "id": "AWP-CTL-010",
@@ -602,6 +602,30 @@
     },
     {
       "id": "AWP-EVT-004",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GAM-001",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GAM-002",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GAM-003",
+      "level": "MUST",
+      "outcome": "n/a",
+      "detail": "world-side requirement"
+    },
+    {
+      "id": "AWP-GAM-004",
       "level": "MUST",
       "outcome": "n/a",
       "detail": "world-side requirement"
@@ -1444,7 +1468,7 @@
       "id": "AWP-VER-004",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "168 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
+      "detail": "170 check(s): streaming/baseline, streaming/frame-gaps, streaming/integer-range, streaming/invalid-manifest, streaming/malformed-frame, streaming/no-action-grants, streaming/reconnect, streaming/refused-submission, streaming/restarted-world, streaming/silent-world"
     },
     {
       "id": "AWP-VER-005",
