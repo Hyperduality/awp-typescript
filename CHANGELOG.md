@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-alpha.6
+
+Targets specification revision `0.1-draft.12`. The API and the vendored schemas are unchanged; draft 12 changes no wire format. The reports come from awp-conformance 0.1.0a10.
+
 ## 0.1.0-alpha.5
 
 Targets specification revision `0.1-draft.11`. The API is unchanged; the vendored schemas add the game profile's `input_chunk` params schema, and the reports come from awp-conformance 0.1.0a9.

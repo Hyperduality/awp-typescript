@@ -1,6 +1,6 @@
 # Conformance evidence
 
-The reports in this directory come from `awp-conformance` 0.1.0a9, which targets `0.1-draft.12`. It was
+The reports in this directory come from `awp-conformance` 0.1.0a10, which targets `0.1-draft.12`. It was
 run against the demo agent (`node dist/demo.js`) in both time models:
 
 ```bash
@@ -16,9 +16,9 @@ awp-conformance agent --manifest conformance/manifest-lockstep.json --frames con
 
 ## Claims (AWP-CNF-005)
 
-- **Core Agent (streaming): AWP-conformant against 0.1-draft.12 (awp-conformance 0.1.0a9)**,
+- **Core Agent (streaming): AWP-conformant against 0.1-draft.12 (awp-conformance 0.1.0a10)**,
   [`report-streaming/report.json`](report-streaming/report.json)
-- **Core Agent (lockstep): AWP-conformant against 0.1-draft.12 (awp-conformance 0.1.0a9)**,
+- **Core Agent (lockstep): AWP-conformant against 0.1-draft.12 (awp-conformance 0.1.0a10)**,
   [`report-lockstep/report.json`](report-lockstep/report.json)
 
 Each claim rests on its report having no failure and nothing untested in scope, plus the evidence below
@@ -26,8 +26,8 @@ for every row the report marks `manual`.
 
 | Mode | pass | fail | warn | untested | manual | n/a | untestable |
 |---|---|---|---|---|---|---|---|
-| streaming | 45 | 0 | 0 | 0 | 2 | 191 | 3 |
-| lockstep | 38 | 0 | 0 | 0 | 4 | 196 | 3 |
+| streaming | 45 | 0 | 0 | 0 | 2 | 195 | 3 |
+| lockstep | 38 | 0 | 0 | 0 | 4 | 200 | 3 |
 
 ## Evidence for the `manual` rows
 
