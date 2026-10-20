@@ -1,15 +1,15 @@
 {
   "suite": {
     "name": "awp-conformance",
-    "version": "0.1.0a9"
+    "version": "0.1.0a10"
   },
-  "specification": "0.1-draft.11",
+  "specification": "0.1-draft.12",
   "target": "node dist/demo.js --url {url} --token {token}",
   "side": "agent",
-  "generated": "2026-10-18T20:45:47Z",
+  "generated": "2026-10-20T14:34:24Z",
   "claim": {
     "status": "conformant",
-    "wording": "Core Agent (lockstep): AWP-conformant against 0.1-draft.11 (awp-conformance 0.1.0a9)",
+    "wording": "Core Agent (lockstep): AWP-conformant against 0.1-draft.12 (awp-conformance 0.1.0a10)",
     "classes": [
       "Core Agent"
     ],
@@ -108,7 +108,7 @@
       "id": "AWP-AGT-001",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "225 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
+      "detail": "224 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
     },
     {
       "id": "AWP-AGT-002",
@@ -288,7 +288,7 @@
       "id": "AWP-CLK-006",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "57 check(s): lockstep/baseline, lockstep/malformed-frame, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
+      "detail": "56 check(s): lockstep/baseline, lockstep/malformed-frame, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
     },
     {
       "id": "AWP-CLK-007",
@@ -402,7 +402,7 @@
       "id": "AWP-CTL-001",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "241 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
+      "detail": "240 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
     },
     {
       "id": "AWP-CTL-002",
@@ -420,7 +420,7 @@
       "id": "AWP-CTL-004",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "57 check(s): lockstep/baseline, lockstep/malformed-frame, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
+      "detail": "56 check(s): lockstep/baseline, lockstep/malformed-frame, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
     },
     {
       "id": "AWP-CTL-005",
@@ -432,7 +432,7 @@
       "id": "AWP-CTL-006",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "241 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
+      "detail": "240 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
     },
     {
       "id": "AWP-CTL-007",
@@ -450,7 +450,7 @@
       "id": "AWP-CTL-009",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "243 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
+      "detail": "242 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
     },
     {
       "id": "AWP-CTL-010",
@@ -1470,7 +1470,7 @@
       "id": "AWP-VER-004",
       "level": "MUST",
       "outcome": "pass",
-      "detail": "211 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
+      "detail": "210 check(s): lockstep/baseline, lockstep/integer-range, lockstep/invalid-manifest, lockstep/malformed-frame, lockstep/no-action-grants, lockstep/reconnect, lockstep/refused-submission, lockstep/restarted-world, lockstep/silent-world"
     },
     {
       "id": "AWP-VER-005",
