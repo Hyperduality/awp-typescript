@@ -15,7 +15,7 @@ const specManifest = () => JSON.parse(readFileSync(join(root, "test", "fixtures"
 const simManifest = () => JSON.parse(readFileSync(join(root, "conformance", "manifest-streaming.json"), "utf8"));
 
 test("SPEC_REVISION names the targeted draft (AWP-VER-009)", () => {
-  assert.equal(SPEC_REVISION, "0.1-draft.11");
+  assert.equal(SPEC_REVISION, "0.1-draft.12");
 });
 
 test("every canonical schema is vendored and compiles in both forms", () => {

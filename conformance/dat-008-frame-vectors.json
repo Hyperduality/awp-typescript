@@ -1,8 +1,8 @@
 {
   "requirement": "AWP-DAT-008",
   "implementation": "@hyperduality/awp (TypeScript)",
-  "spec_revision": "0.1-draft.11",
-  "vectors_file": "schemas/test-vectors/frames.json (vendored from spec-v0.1-draft.11, commit 972233b7cabe7bdc752b0b631ef0d82865cc6fb6)",
+  "spec_revision": "0.1-draft.12",
+  "vectors_file": "schemas/test-vectors/frames.json (vendored from spec-v0.1-draft.12, commit 85751d044c7ca474830f870d18c8a54c4d1324c6)",
   "passed": 20,
   "failed": 0,
   "results": [
